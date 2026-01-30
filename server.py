@@ -42,22 +42,31 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     min-height: 100vh;
                     padding: 20px;
                 }
+                .container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: calc(100vh - 40px);
+                }
                 .glass-card {
                     background: rgba(255, 255, 255, 0.95);
                     backdrop-filter: blur(10px);
                     border-radius: 20px;
-                    padding: 40px;
-                    max-width: 800px;
+                    padding: 30px;
+                    width: 95%;
+                    max-width: 1400px;
                     margin: 0 auto;
                     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
                     border: 1px solid rgba(255, 255, 255, 0.2);
                 }
                 .header {
                     text-align: center;
-                    margin-bottom: 40px;
+                    margin-bottom: 30px;
+                    padding-bottom: 20px;
+                    border-bottom: 2px solid rgba(102, 126, 234, 0.1);
                 }
                 .header h1 {
-                    font-size: 3rem;
+                    font-size: 2.5rem;
                     background: linear-gradient(90deg, #667eea, #764ba2);
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
@@ -65,38 +74,56 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                 }
                 .header p {
                     color: #666;
-                    font-size: 1.2rem;
+                    font-size: 1.1rem;
+                }
+                .main-content {
+                    display: flex;
+                    gap: 30px;
+                }
+                .left-panel {
+                    flex: 1;
+                    min-width: 400px;
+                }
+                .right-panel {
+                    flex: 1;
+                    min-width: 400px;
                 }
                 .form-section {
-                    margin-bottom: 30px;
+                    margin-bottom: 25px;
+                    background: white;
+                    padding: 20px;
+                    border-radius: 15px;
+                    border: 1px solid #e0e0e0;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
                 }
                 .section-title {
                     display: flex;
                     align-items: center;
-                    margin-bottom: 20px;
+                    margin-bottom: 15px;
                     color: #333;
-                    font-size: 1.3rem;
+                    font-size: 1.2rem;
+                    font-weight: 600;
                 }
                 .section-title .icon {
                     margin-right: 10px;
-                    font-size: 1.5rem;
+                    font-size: 1.3rem;
                 }
                 .input-group {
-                    margin-bottom: 25px;
+                    margin-bottom: 15px;
                 }
                 .input-label {
                     display: block;
                     margin-bottom: 8px;
                     color: #555;
                     font-weight: 600;
-                    font-size: 1.1rem;
+                    font-size: 1rem;
                 }
                 .input-field {
                     width: 100%;
-                    padding: 16px;
+                    padding: 12px;
                     border: 2px solid #e0e0e0;
-                    border-radius: 12px;
-                    font-size: 1.1rem;
+                    border-radius: 10px;
+                    font-size: 1rem;
                     transition: all 0.3s;
                     background: white;
                 }
@@ -105,45 +132,16 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     outline: none;
                     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
                 }
-                .radio-group {
-                    display: flex;
-                    gap: 20px;
-                    margin: 15px 0;
-                }
-                .radio-option {
-                    flex: 1;
-                    text-align: center;
-                }
-                .radio-input {
-                    display: none;
-                }
-                .radio-label {
-                    display: block;
-                    padding: 20px;
-                    background: #f8f9fa;
-                    border: 2px solid #e0e0e0;
-                    border-radius: 12px;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                    font-weight: 500;
-                }
-                .radio-input:checked + .radio-label {
-                    background: #667eea;
-                    color: white;
-                    border-color: #667eea;
-                    transform: translateY(-2px);
-                    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-                }
                 .report-type-group {
                     display: grid;
                     grid-template-columns: repeat(2, 1fr);
-                    gap: 15px;
-                    margin: 20px 0;
+                    gap: 10px;
+                    margin: 15px 0;
                 }
                 .report-type-card {
                     background: white;
-                    padding: 20px;
-                    border-radius: 12px;
+                    padding: 15px;
+                    border-radius: 10px;
                     border: 2px solid #e0e0e0;
                     text-align: center;
                     cursor: pointer;
@@ -161,29 +159,107 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
                 }
                 .report-type-icon {
-                    font-size: 2rem;
-                    margin-bottom: 10px;
+                    font-size: 1.8rem;
+                    margin-bottom: 8px;
                 }
                 .report-type-name {
-                    font-size: 1.2rem;
+                    font-size: 1.1rem;
                     font-weight: bold;
                     margin-bottom: 5px;
                 }
                 .report-type-desc {
-                    font-size: 0.9rem;
+                    font-size: 0.85rem;
                     opacity: 0.8;
                 }
-                .button-group {
-                    display: flex;
-                    gap: 20px;
-                    margin-top: 40px;
+                .quick-stations {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 10px;
+                    margin: 15px 0;
+                }
+                .station-card {
+                    background: white;
+                    padding: 15px;
+                    border-radius: 10px;
+                    border: 2px solid #e0e0e0;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                }
+                .station-card:hover {
+                    border-color: #667eea;
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                }
+                .station-card.highlight {
+                    background: #667eea;
+                    color: white;
+                    border-color: #667eea;
+                }
+                .station-card.highlight .station-code {
+                    color: white;
+                }
+                .station-card.highlight .station-name {
+                    color: rgba(255, 255, 255, 0.9);
+                }
+                .station-code {
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                    color: #667eea;
+                    margin-bottom: 5px;
+                }
+                .station-name {
+                    color: #666;
+                    font-size: 0.85rem;
+                }
+                .radio-group {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 10px;
+                    margin: 15px 0;
+                }
+                .radio-option {
+                    text-align: center;
+                }
+                .radio-input {
+                    display: none;
+                }
+                .radio-label {
+                    display: block;
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 10px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    font-weight: 500;
+                }
+                .radio-input:checked + .radio-label {
+                    background: #667eea;
+                    color: white;
+                    border-color: #667eea;
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+                }
+                .year-month-group {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 15px;
+                }
+                #monthSelection {
+                    grid-column: span 2;
+                }
+                .action-buttons {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 15px;
+                    margin-top: 25px;
                 }
                 .btn {
-                    flex: 1;
-                    padding: 20px;
+                    padding: 16px;
                     border: none;
-                    border-radius: 12px;
-                    font-size: 1.2rem;
+                    border-radius: 10px;
+                    font-size: 1.1rem;
                     font-weight: 600;
                     cursor: pointer;
                     transition: all 0.3s;
@@ -198,7 +274,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                 }
                 .btn-primary:hover {
                     transform: translateY(-3px);
-                    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+                    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
                 }
                 .btn-secondary {
                     background: #f8f9fa;
@@ -209,52 +285,30 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     background: #e9ecef;
                     transform: translateY(-2px);
                 }
-                .quick-stations {
-                    display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    gap: 15px;
-                    margin: 30px 0;
-                }
-                .station-card {
-                    background: white;
-                    padding: 20px;
-                    border-radius: 12px;
-                    border: 2px solid #e0e0e0;
+                .status-bar {
+                    margin-top: 20px;
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border-radius: 10px;
                     text-align: center;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                }
-                .station-card:hover {
-                    border-color: #667eea;
-                    transform: translateY(-2px);
-                    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-                }
-                .station-code {
-                    font-size: 2rem;
-                    font-weight: bold;
-                    color: #667eea;
-                    margin-bottom: 5px;
-                }
-                .station-name {
                     color: #666;
                     font-size: 0.9rem;
-                }
-                .highlight {
-                    background: #fff3cd;
-                    border: 2px solid #ffc107;
-                }
-                .status-bar {
-                    margin-top: 30px;
-                    padding: 20px;
-                    background: #f8f9fa;
-                    border-radius: 12px;
-                    text-align: center;
-                    color: #666;
+                    border: 1px solid #e0e0e0;
                 }
                 .loading {
                     display: none;
-                    text-align: center;
-                    padding: 40px;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                    z-index: 1000;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
                 }
                 .spinner {
                     width: 50px;
@@ -263,141 +317,254 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     border-top: 5px solid #667eea;
                     border-radius: 50%;
                     animation: spin 1s linear infinite;
-                    margin: 0 auto 20px;
+                    margin-bottom: 20px;
                 }
                 @keyframes spin {
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(360deg); }
                 }
+                .info-panel {
+                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    padding: 20px;
+                    border-radius: 15px;
+                    border: 1px solid #dee2e6;
+                }
+                .info-title {
+                    color: #333;
+                    font-size: 1.2rem;
+                    margin-bottom: 15px;
+                    font-weight: 600;
+                }
+                .info-content {
+                    color: #666;
+                    font-size: 0.9rem;
+                    line-height: 1.5;
+                }
+                .info-list {
+                    list-style: none;
+                    padding: 0;
+                }
+                .info-list li {
+                    margin-bottom: 10px;
+                    padding-left: 25px;
+                    position: relative;
+                }
+                .info-list li:before {
+                    content: "✓";
+                    position: absolute;
+                    left: 0;
+                    color: #667eea;
+                    font-weight: bold;
+                }
+                @media (max-width: 1024px) {
+                    .main-content {
+                        flex-direction: column;
+                    }
+                    .left-panel, .right-panel {
+                        min-width: 100%;
+                    }
+                }
             </style>
         </head>
         <body>
-            <div class="glass-card">
-                <div class="header">
-                    <h1>🌤️ METAR/TAF Downloader | AJAY</h1>
-                    <p>Download aviation weather reports (METAR/TAF)</p>
-                </div>
-                
-                <form id="downloadForm">
-                    <!-- Report Type Selection -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <span class="icon">📋</span>
-                            <span>Report Type</span>
-                        </div>
-                        <div class="report-type-group">
-                            <div class="report-type-card selected" onclick="selectReportType('METAR')" id="metarCard">
-                                <div class="report-type-icon">🌤️</div>
-                                <div class="report-type-name">METAR</div>
-                                <div class="report-type-desc">Aviation Routine Weather Report</div>
-                            </div>
-                            <div class="report-type-card" onclick="selectReportType('TAF')" id="tafCard">
-                                <div class="report-type-icon">📡</div>
-                                <div class="report-type-name">TAF</div>
-                                <div class="report-type-desc">Terminal Aerodrome Forecast</div>
-                            </div>
-                        </div>
-                        <input type="hidden" id="reportType" name="reportType" value="METAR">
+            <div class="container">
+                <div class="glass-card">
+                    <div class="header">
+                        <h1>🌤️ METAR/TAF Smart Downloader</h1>
+                        <p>Download aviation weather reports in batch or single month</p>
                     </div>
                     
-                    <!-- Station Information -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <span class="icon">📍</span>
-                            <span>Station Information</span>
+                    <div class="main-content">
+                        <!-- Left Panel: Input Form -->
+                        <div class="left-panel">
+                            <form id="downloadForm">
+                                <!-- Report Type -->
+                                <div class="form-section">
+                                    <div class="section-title">
+                                        <span class="icon">📋</span>
+                                        <span>1. Select Report Type</span>
+                                    </div>
+                                    <div class="report-type-group">
+                                        <div class="report-type-card selected" onclick="selectReportType('METAR')" id="metarCard">
+                                            <div class="report-type-icon">🌤️</div>
+                                            <div class="report-type-name">METAR</div>
+                                            <div class="report-type-desc">Current weather</div>
+                                        </div>
+                                        <div class="report-type-card" onclick="selectReportType('TAF')" id="tafCard">
+                                            <div class="report-type-icon">📡</div>
+                                            <div class="report-type-name">TAF</div>
+                                            <div class="report-type-desc">Forecast</div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="reportType" name="reportType" value="METAR">
+                                </div>
+                                
+                                <!-- Station Selection -->
+                                <div class="form-section">
+                                    <div class="section-title">
+                                        <span class="icon">📍</span>
+                                        <span>2. Station Selection</span>
+                                    </div>
+                                    <div class="input-group">
+                                        <label class="input-label">ICAO Station Code</label>
+                                        <input type="text" class="input-field" id="station" name="station" value="VOGA" 
+                                               maxlength="4" required pattern="[A-Z]{4}" placeholder="Enter 4-letter ICAO code">
+                                    </div>
+                                    <div class="quick-stations">
+                                        <div class="station-card highlight" onclick="setStation('VOGA')">
+                                            <div class="station-code">VOGA</div>
+                                            <div class="station-name">GOA (MOPA)</div>
+                                        </div>
+                                        <div class="station-card" onclick="setStation('VOMM')">
+                                            <div class="station-code">VOMM</div>
+                                            <div class="station-name">Chennai</div>
+                                        </div>
+                                        <div class="station-card" onclick="setStation('VABB')">
+                                            <div class="station-code">VABB</div>
+                                            <div class="station-name">Mumbai</div>
+                                        </div>
+                                        <div class="station-card" onclick="setStation('VIDP')">
+                                            <div class="station-code">VIDP</div>
+                                            <div class="station-name">Delhi</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Time Period -->
+                                <div class="form-section">
+                                    <div class="section-title">
+                                        <span class="icon">📅</span>
+                                        <span>3. Time Period</span>
+                                    </div>
+                                    <div class="year-month-group">
+                                        <div class="input-group">
+                                            <label class="input-label">Year</label>
+                                            <input type="number" class="input-field" id="year" name="year" value="2024" min="2000" max="2026" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label class="input-label">Download Mode</label>
+                                            <div class="radio-group">
+                                                <div class="radio-option">
+                                                    <input type="radio" id="single" name="mode" value="single" checked class="radio-input">
+                                                    <label for="single" class="radio-label">📁 Single</label>
+                                                </div>
+                                                <div class="radio-option">
+                                                    <input type="radio" id="all" name="mode" value="all" class="radio-input">
+                                                    <label for="all" class="radio-label">📦 All 12</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="monthSelection">
+                                        <div class="input-group">
+                                            <label class="input-label">Month</label>
+                                            <select class="input-field" id="month" name="month">
+                                                <option value="01">January</option>
+                                                <option value="02">February</option>
+                                                <option value="03">March</option>
+                                                <option value="04">April</option>
+                                                <option value="05">May</option>
+                                                <option value="06">June</option>
+                                                <option value="07">July</option>
+                                                <option value="08">August</option>
+                                                <option value="09">September</option>
+                                                <option value="10">October</option>
+                                                <option value="11">November</option>
+                                                <option value="12">December</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="action-buttons">
+                                    <button type="button" class="btn btn-primary" onclick="startDownload()">
+                                        <span>🚀</span>
+                                        <span>Start Download</span>
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                        <span>↺</span>
+                                        <span>Reset Form</span>
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <!-- Status Bar -->
+                            <div class="status-bar">
+                                <p>📊 <strong>Note:</strong> Download may take some time depending on data availability</p>
+                                <p style="margin-top: 5px; font-size: 0.85rem;">Contact: AJAY YADAV (IMD GOA) • ajaypahe02@gmail.com</p>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <label class="input-label">ICAO Station Code</label>
-                            <input type="text" class="input-field" id="station" name="station" value="VOGA" 
-                                   maxlength="4" required pattern="[A-Z]{4}" placeholder="Enter 4-letter ICAO code">
-                        </div>
-                        <div class="quick-stations">
-                            <div class="station-card highlight" onclick="setStation('VOGA')">
-                                <div class="station-code">VOGA</div>
-                                <div class="station-name">GOA (MOPA)</div>
+                        
+                        <!-- Right Panel: Information -->
+                        <div class="right-panel">
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <span class="icon">ℹ️</span>
+                                    <span>Application Information</span>
+                                </div>
+                                <div class="info-panel">
+                                    <div class="info-title">Features:</div>
+                                    <ul class="info-list">
+                                        <li>Download METAR/TAF reports from OGIMET</li>
+                                        <li>Single month or all 12 months at once</li>
+                                        <li>Automatic data cleaning & formatting</li>
+                                        <li>Batch processing with intelligent delays</li>
+                                        <li>Original file naming: METARYYYYMM.txt / TAFYYYYMM.txt</li>
+                                    </ul>
+                                    
+                                    <div class="info-title" style="margin-top: 20px;">How to Use:</div>
+                                    <ol style="color: #666; font-size: 0.9rem; line-height: 1.5; padding-left: 20px;">
+                                        <li style="margin-bottom: 8px;">Select report type (METAR or TAF)</li>
+                                        <li style="margin-bottom: 8px;">Enter ICAO station code or click quick station</li>
+                                        <li style="margin-bottom: 8px;">Choose year and download mode</li>
+                                        <li style="margin-bottom: 8px;">For single month, select month</li>
+                                        <li style="margin-bottom: 8px;">Click Start Download</li>
+                                    </ol>
+                                    
+                                    <div class="info-title" style="margin-top: 20px;">File Output:</div>
+                                    <div class="info-content">
+                                        <p><strong>Single Month:</strong> METAR202401.txt or TAF202401.txt</p>
+                                        <p><strong>All Months:</strong> Folder with 12 files (METAR_VOGA_2024.zip)</p>
+                                        <p><strong>Data Format:</strong> Clean text with timestamps removed</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="station-card" onclick="setStation('VOMM')">
-                                <div class="station-code">VOMM</div>
-                                <div class="station-name">Chennai</div>
-                            </div>
-                            <div class="station-card" onclick="setStation('VABB')">
-                                <div class="station-code">VABB</div>
-                                <div class="station-name">Mumbai</div>
-                            </div>
-                            <div class="station-card" onclick="setStation('VIDP')">
-                                <div class="station-code">VIDP</div>
-                                <div class="station-name">Delhi</div>
+                            
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <span class="icon">⚡</span>
+                                    <span>Quick Tips</span>
+                                </div>
+                                <div class="info-panel">
+                                    <div class="info-content">
+                                        <p><strong>✅ Recommended Stations:</strong></p>
+                                        <p>• VOGA (GOA) - Tested & Verified<br>
+                                           • VOMM (Chennai)<br>
+                                           • VABB (Mumbai)<br>
+                                           • VIDP (Delhi)</p>
+                                        
+                                        <p style="margin-top: 15px;"><strong>⏱️ Processing Time:</strong></p>
+                                        <p>• Single month: 10-30 seconds<br>
+                                           • All months: 1-2 minutes</p>
+                                        
+                                        <p style="margin-top: 15px;"><strong>📁 Data Source:</strong></p>
+                                        <p>• OGIMET METAR/TAF database<br>
+                                           • Data format: METAR=SA, TAF=FC<br>
+                                           • UTC timezone</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Time Period -->
-                    <div class="form-section">
-                        <div class="section-title">
-                            <span class="icon">📅</span>
-                            <span>Time Period</span>
-                        </div>
-                        <div class="input-group">
-                            <label class="input-label">Year</label>
-                            <input type="number" class="input-field" id="year" name="year" value="2025" min="2000" max="2026" required>
-                        </div>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="single" name="mode" value="single" checked class="radio-input">
-                                <label for="single" class="radio-label">📁 Single Month</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="all" name="mode" value="all" class="radio-input">
-                                <label for="all" class="radio-label">📦 All 12 Months</label>
-                            </div>
-                        </div>
-                        <div id="monthSelection">
-                            <div class="input-group">
-                                <label class="input-label">Month</label>
-                                <select class="input-field" id="month" name="month">
-                                    <option value="01">January</option>
-                                    <option value="02">February</option>
-                                    <option value="03">March</option>
-                                    <option value="04">April</option>
-                                    <option value="05">May</option>
-                                    <option value="06">June</option>
-                                    <option value="07">July</option>
-                                    <option value="08">August</option>
-                                    <option value="09">September</option>
-                                    <option value="10">October</option>
-                                    <option value="11">November</option>
-                                    <option value="12">December</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Buttons -->
-                    <div class="button-group">
-                        <button type="button" class="btn btn-primary" onclick="startDownload()">
-                            <span>🚀</span>
-                            <span>Start Download</span>
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                            <span>↺</span>
-                            <span>Reset</span>
-                        </button>
-                    </div>
-                </form>
-                
-                <!-- Loading Section -->
-                <div id="loading" class="loading">
-                    <div class="spinner"></div>
-                    <h3>Downloading Data...</h3>
-                    <p id="statusText">Please wait while we process your request</p>
                 </div>
-                
-                <!-- Status Bar -->
-                <div class="status-bar">
-                    <p>📊 It may take a while...The site is busy pondering its existence. <br>
-                       Contact : AJAY YADAV (IMD GOA) <br>
-                       ajaypahe02@gmail.com</p>
-                </div>
+            </div>
+            
+            <!-- Loading Overlay -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <h3 id="statusText">Downloading Data...</h3>
+                <p>Please wait while we process your request</p>
             </div>
             
             <script>
@@ -452,8 +619,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     }
                     
                     // Show loading
-                    document.getElementById('loading').style.display = 'block';
-                    document.querySelector('form').style.display = 'none';
+                    document.getElementById('loading').style.display = 'flex';
                     
                     // Update status
                     const statusText = document.getElementById('statusText');
@@ -838,7 +1004,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
         return '\n'.join(clean_reports)
 
     def clean_taf_text_original(self, text):
-        """ TAF """
+        """ORIGINAL TAF cleaning"""
         lines = text.split('\n')
         clean_tafs = []
         current_taf = []
@@ -946,23 +1112,32 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     min-height: 100vh;
                     padding: 20px;
                 }}
+                .container {{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: calc(100vh - 40px);
+                }}
                 .result-card {{
                     background: rgba(255, 255, 255, 0.95);
                     backdrop-filter: blur(10px);
                     border-radius: 20px;
-                    padding: 40px;
-                    max-width: 900px;
+                    padding: 30px;
+                    width: 95%;
+                    max-width: 1200px;
                     margin: 0 auto;
                     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
                     border: 1px solid rgba(255, 255, 255, 0.2);
                 }}
                 .result-header {{
                     text-align: center;
-                    margin-bottom: 40px;
+                    margin-bottom: 30px;
+                    padding-bottom: 20px;
+                    border-bottom: 2px solid rgba(102, 126, 234, 0.1);
                 }}
                 .result-icon {{
-                    font-size: 4rem;
-                    margin-bottom: 20px;
+                    font-size: 3rem;
+                    margin-bottom: 15px;
                 }}
                 .success .result-icon {{
                     color: #10b981;
@@ -971,28 +1146,41 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     color: #ef4444;
                 }}
                 .result-title {{
-                    font-size: 2.5rem;
+                    font-size: 2rem;
                     margin-bottom: 10px;
+                    color: #333;
+                }}
+                .main-content {{
+                    display: flex;
+                    gap: 30px;
+                }}
+                .stats-panel {{
+                    flex: 1;
+                    min-width: 300px;
+                }}
+                .preview-panel {{
+                    flex: 1.5;
+                    min-width: 400px;
                 }}
                 .stats-grid {{
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                    gap: 20px;
-                    margin: 40px 0;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 15px;
+                    margin: 20px 0;
                 }}
                 .stat-card {{
                     background: white;
-                    padding: 25px;
-                    border-radius: 15px;
+                    padding: 20px;
+                    border-radius: 12px;
                     text-align: center;
                     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
                     border: 1px solid #e0e0e0;
                 }}
                 .stat-value {{
-                    font-size: 2.5rem;
+                    font-size: 2rem;
                     font-weight: bold;
                     color: #667eea;
-                    margin-bottom: 10px;
+                    margin-bottom: 8px;
                 }}
                 .stat-label {{
                     color: #666;
@@ -1000,32 +1188,32 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                 }}
                 .file-preview {{
                     background: #f8f9fa;
-                    padding: 25px;
-                    border-radius: 15px;
-                    margin: 40px 0;
+                    padding: 20px;
+                    border-radius: 12px;
+                    margin: 20px 0;
                 }}
                 .preview-content {{
                     background: white;
-                    padding: 20px;
-                    border-radius: 10px;
-                    max-height: 400px;
+                    padding: 15px;
+                    border-radius: 8px;
+                    height: 300px;
                     overflow-y: auto;
                     font-family: 'Courier New', monospace;
-                    font-size: 14px;
-                    line-height: 1.5;
+                    font-size: 13px;
+                    line-height: 1.4;
                     white-space: pre-wrap;
                 }}
                 .action-buttons {{
-                    display: flex;
-                    gap: 20px;
-                    margin-top: 40px;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 15px;
+                    margin-top: 30px;
                 }}
                 .action-btn {{
-                    flex: 1;
-                    padding: 20px;
+                    padding: 16px;
                     border: none;
-                    border-radius: 12px;
-                    font-size: 1.2rem;
+                    border-radius: 10px;
+                    font-size: 1.1rem;
                     font-weight: 600;
                     cursor: pointer;
                     text-decoration: none;
@@ -1038,7 +1226,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                 }}
                 .download-btn:hover {{
                     transform: translateY(-3px);
-                    box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+                    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
                 }}
                 .back-btn {{
                     background: #f8f9fa;
@@ -1052,55 +1240,93 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                 .note-box {{
                     background: #fff3cd;
                     border: 1px solid #ffc107;
-                    padding: 15px;
-                    border-radius: 10px;
-                    margin-top: 20px;
+                    padding: 12px;
+                    border-radius: 8px;
+                    margin-top: 15px;
                     color: #856404;
+                    font-size: 0.9rem;
+                }}
+                .quick-stations {{
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 10px;
+                    margin: 15px 0;
+                }}
+                @media (max-width: 1024px) {{
+                    .main-content {{
+                        flex-direction: column;
+                    }}
+                    .stats-panel, .preview-panel {{
+                        min-width: 100%;
+                    }}
                 }}
             </style>
         </head>
         <body>
-            <div class="result-card {'success' if result['success'] else 'error'}">
-                <div class="result-header">
-                    <div class="result-icon">
-                        {'✅' if result['success'] else '❌'}
+            <div class="container">
+                <div class="result-card {'success' if result['success'] else 'error'}">
+                    <div class="result-header">
+                        <div class="result-icon">
+                            {'✅' if result['success'] else '❌'}
+                        </div>
+                        <h1 class="result-title">
+                            {'Download Successful!' if result['success'] else 'Download Failed'}
+                        </h1>
+                        <p>{report_type} Report | Station: {station} | Month: {month_name} {year}</p>
                     </div>
-                    <h1 class="result-title">
-                        {'Download Successful!' if result['success'] else 'Download Failed'}
-                    </h1>
-                    <p>{report_type} Report | Station: {station} | Month: {month_name} {year}</p>
-                </div>
+                    
+                    <div class="main-content">
         """
         
         if result['success']:
             html += f"""
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value">{result['reports']}</div>
-                        <div class="stat-label">{report_type} Reports</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">{month_name}</div>
-                        <div class="stat-label">Month</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">{year}</div>
-                        <div class="stat-label">Year</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">{report_type}</div>
-                        <div class="stat-label">Report Type</div>
-                    </div>
-                </div>
-                
-                <div class="file-preview">
-                    <h3>📄 Cleaned {report_type} File Preview:</h3>
-                    <div class="preview-content">
+                        <!-- Left Panel: Stats -->
+                        <div class="stats-panel">
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-value">{result['reports']}</div>
+                                    <div class="stat-label">{report_type} Reports</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value">{month_name}</div>
+                                    <div class="stat-label">Month</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value">{year}</div>
+                                    <div class="stat-label">Year</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value">{report_type}</div>
+                                    <div class="stat-label">Report Type</div>
+                                </div>
+                            </div>
+                            
+                            <div class="note-box">
+                                <strong>File Information:</strong><br>
+                                ✓ File: {result['filename']}<br>
+                                ✓ Format: {'TAF (tipo=FC)' if report_type == 'TAF' else 'METAR (tipo=SA)'}<br>
+                                ✓ Processing: Original cleaning applied
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <a href="/file/{result['filename']}" class="action-btn download-btn">
+                                    📥 Download File
+                                </a>
+                                <a href="/" class="action-btn back-btn">
+                                    ← New Download
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Panel: Preview -->
+                        <div class="preview-panel">
+                            <h3 style="margin-bottom: 15px; color: #333;">File Preview (first 20 lines):</h3>
+                            <div class="file-preview">
+                                <div class="preview-content">
             """
             
-            # Show cleaned content with proper formatting
+            # Show cleaned content
             if result['clean_data']:
-                # Show first 20 lines
                 lines = result['clean_data'].split('\n')
                 for i, line in enumerate(lines[:20]):
                     html += f"{line}<br>"
@@ -1109,66 +1335,57 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 html += "Preview not available"
             
-            # Different note for METAR vs TAF
-            if report_type == 'TAF':
-                note_text = "✓ TAF cleaning"
-            else:
-                note_text = "✓ METAR cleaning"
-            
             html += f"""
-                    </div>
-                    <div class="note-box">
-                        <strong>{note_text}</strong><br>
-                        File saved as: {result['filename']}<br>
-                        Report type: {'TAF (tipo=FC)' if report_type == 'TAF' else 'METAR (tipo=SA)'}
-                    </div>
-                </div>
-                
-                <div class="action-buttons">
-                    <a href="/file/{result['filename']}" class="action-btn download-btn">
-                        📥 Download Clean {report_type} File
-                    </a>
-                    <a href="/" class="action-btn back-btn">
-                        ← Download Another
-                    </a>
-                </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 15px; color: #666; font-size: 0.9rem;">
+                                <strong>Note:</strong> Original naming format preserved: {report_type}YYYYMM.txt
+                            </div>
+                        </div>
             """
         else:
             html += f"""
-                <div style="text-align: center; padding: 40px;">
-                    <div style="font-size: 1.2rem; color: #666; margin-bottom: 30px;">
-                        <strong>Error:</strong> {result['error']}
-                    </div>
-                    
-                    <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin: 30px 0;">
-                        <h3 style="margin-bottom: 20px;">Try These Stations:</h3>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-                            <a href="/download?station=VOGA&year=2024&month=01&type={report_type_lower}" 
-                               style="background: #667eea; color: white; padding: 15px; border-radius: 10px; text-decoration: none; text-align: center;">
-                                VOGA (Priority)
-                            </a>
-                            <a href="/download?station=VOMM&year=2024&month=01&type={report_type_lower}" 
-                               style="background: #e0e0e0; color: #333; padding: 15px; border-radius: 10px; text-decoration: none; text-align: center;">
-                                VOMM Chennai
-                            </a>
-                            <a href="/download?station=VABB&year=2024&month=01&type={report_type_lower}" 
-                               style="background: #e0e0e0; color: #333; padding: 15px; border-radius: 10px; text-decoration: none; text-align: center;">
-                                VABB Mumbai
-                            </a>
-                            <a href="/download?station=VIDP&year=2024&month=01&type={report_type_lower}" 
-                               style="background: #e0e0e0; color: #333; padding: 15px; border-radius: 10px; text-decoration: none; text-align: center;">
-                                VIDP Delhi
+                        <!-- Error View -->
+                        <div style="flex: 1; text-align: center; padding: 20px;">
+                            <div style="font-size: 1.1rem; color: #666; margin-bottom: 25px; background: #f8f9fa; padding: 20px; border-radius: 12px;">
+                                <strong>Error:</strong> {result['error']}
+                            </div>
+                            
+                            <div style="background: white; padding: 25px; border-radius: 15px; margin: 25px 0; border: 1px solid #e0e0e0;">
+                                <h3 style="margin-bottom: 20px; color: #333;">Try These Stations:</h3>
+                                <div class="quick-stations">
+                                    <a href="/download?station=VOGA&year=2024&month=01&type={report_type_lower}" 
+                                       style="background: #667eea; color: white; padding: 15px; border-radius: 10px; text-decoration: none; text-align: center; display: block;">
+                                        <div style="font-size: 1.2rem; font-weight: bold;">VOGA</div>
+                                        <div style="font-size: 0.9rem;">GOA (Priority)</div>
+                                    </a>
+                                    <a href="/download?station=VOMM&year=2024&month=01&type={report_type_lower}" 
+                                       style="background: #f8f9fa; color: #333; padding: 15px; border-radius: 10px; text-decoration: none; text-align: center; display: block; border: 1px solid #e0e0e0;">
+                                        <div style="font-size: 1.2rem; font-weight: bold;">VOMM</div>
+                                        <div style="font-size: 0.9rem;">Chennai</div>
+                                    </a>
+                                    <a href="/download?station=VABB&year=2024&month=01&type={report_type_lower}" 
+                                       style="background: #f8f9fa; color: #333; padding: 15px; border-radius: 10px; text-decoration: none; text-align: center; display: block; border: 1px solid #e0e0e0;">
+                                        <div style="font-size: 1.2rem; font-weight: bold;">VABB</div>
+                                        <div style="font-size: 0.9rem;">Mumbai</div>
+                                    </a>
+                                    <a href="/download?station=VIDP&year=2024&month=01&type={report_type_lower}" 
+                                       style="background: #f8f9fa; color: #333; padding: 15px; border-radius: 10px; text-decoration: none; text-align: center; display: block; border: 1px solid #e0e0e0;">
+                                        <div style="font-size: 1.2rem; font-weight: bold;">VIDP</div>
+                                        <div style="font-size: 0.9rem;">Delhi</div>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <a href="/" class="action-btn back-btn" style="max-width: 300px; margin: 0 auto;">
+                                ← Try Again
                             </a>
                         </div>
-                    </div>
-                    
-                    <a href="/" class="action-btn back-btn" style="max-width: 300px; margin: 0 auto;">
-                        ← Try Again
-                    </a>
-                </div>
             """
         
         html += """
+                    </div>
+                </div>
             </div>
         </body>
         </html>
@@ -1198,42 +1415,64 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     min-height: 100vh;
                     padding: 20px;
                 }}
+                .container {{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: calc(100vh - 40px);
+                }}
                 .result-card {{
                     background: rgba(255, 255, 255, 0.95);
                     backdrop-filter: blur(10px);
                     border-radius: 20px;
-                    padding: 40px;
-                    max-width: 1000px;
+                    padding: 30px;
+                    width: 95%;
+                    max-width: 1200px;
                     margin: 0 auto;
                     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
                     border: 1px solid rgba(255, 255, 255, 0.2);
                 }}
                 .header {{
                     text-align: center;
-                    margin-bottom: 40px;
+                    margin-bottom: 30px;
+                    padding-bottom: 20px;
+                    border-bottom: 2px solid rgba(102, 126, 234, 0.1);
                 }}
                 .header h1 {{
-                    font-size: 2.5rem;
+                    font-size: 2rem;
                     color: #333;
                     margin-bottom: 10px;
                 }}
+                .main-content {{
+                    display: flex;
+                    gap: 30px;
+                }}
+                .summary-panel {{
+                    flex: 1;
+                    min-width: 300px;
+                }}
+                .months-panel {{
+                    flex: 1.5;
+                    min-width: 400px;
+                }}
                 .summary-grid {{
                     display: grid;
-                    grid-template-columns: repeat(4, 1fr);
-                    gap: 20px;
-                    margin: 40px 0;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 15px;
+                    margin: 20px 0;
                 }}
                 .summary-card {{
                     background: white;
-                    padding: 25px;
-                    border-radius: 15px;
+                    padding: 20px;
+                    border-radius: 12px;
                     text-align: center;
                     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+                    border: 1px solid #e0e0e0;
                 }}
                 .summary-value {{
-                    font-size: 2.5rem;
+                    font-size: 2rem;
                     font-weight: bold;
-                    margin-bottom: 10px;
+                    margin-bottom: 8px;
                 }}
                 .success-value {{
                     color: #10b981;
@@ -1244,13 +1483,13 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                 .month-grid {{
                     display: grid;
                     grid-template-columns: repeat(3, 1fr);
-                    gap: 15px;
-                    margin: 40px 0;
+                    gap: 12px;
+                    margin: 20px 0;
                 }}
                 .month-card {{
                     background: white;
-                    padding: 20px;
-                    border-radius: 12px;
+                    padding: 15px;
+                    border-radius: 10px;
                     border: 2px solid #e0e0e0;
                     text-align: center;
                 }}
@@ -1264,24 +1503,25 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                 }}
                 .month-name {{
                     font-weight: bold;
-                    margin-bottom: 10px;
+                    margin-bottom: 8px;
+                    font-size: 0.9rem;
                 }}
                 .month-reports {{
-                    font-size: 1.5rem;
+                    font-size: 1.3rem;
                     color: #667eea;
-                    margin-bottom: 10px;
+                    margin-bottom: 5px;
                 }}
                 .action-buttons {{
-                    display: flex;
-                    gap: 20px;
-                    margin-top: 40px;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 15px;
+                    margin-top: 25px;
                 }}
                 .action-btn {{
-                    flex: 1;
-                    padding: 20px;
+                    padding: 16px;
                     border: none;
-                    border-radius: 12px;
-                    font-size: 1.2rem;
+                    border-radius: 10px;
+                    font-size: 1.1rem;
                     font-weight: 600;
                     cursor: pointer;
                     text-decoration: none;
@@ -1294,7 +1534,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                 }}
                 .download-btn:hover {{
                     transform: translateY(-3px);
-                    box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+                    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
                 }}
                 .back-btn {{
                     background: #f8f9fa;
@@ -1308,81 +1548,110 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                 .note-box {{
                     background: #fff3cd;
                     border: 1px solid #ffc107;
-                    padding: 15px;
-                    border-radius: 10px;
-                    margin-top: 20px;
+                    padding: 12px;
+                    border-radius: 8px;
+                    margin-top: 15px;
                     color: #856404;
+                    font-size: 0.9rem;
+                }}
+                @media (max-width: 1024px) {{
+                    .main-content {{
+                        flex-direction: column;
+                    }}
+                    .summary-panel, .months-panel {{
+                        min-width: 100%;
+                    }}
+                    .month-grid {{
+                        grid-template-columns: repeat(4, 1fr);
+                    }}
+                }}
+                @media (max-width: 768px) {{
+                    .month-grid {{
+                        grid-template-columns: repeat(3, 1fr);
+                    }}
                 }}
             </style>
         </head>
         <body>
-            <div class="result-card">
-                <div class="header">
-                    <h1>📦 {report_type} Batch Download Complete</h1>
-                    <p>{station} - {year} (All 12 Months)</p>
-                </div>
-                
-                <div class="summary-grid">
-                    <div class="summary-card">
-                        <div class="summary-value success-value">{results['total_success']}/12</div>
-                        <div class="summary-label">Successful Months</div>
+            <div class="container">
+                <div class="result-card">
+                    <div class="header">
+                        <h1>📦 {report_type} Batch Download Complete</h1>
+                        <p>{station} - {year} (All 12 Months)</p>
                     </div>
-                    <div class="summary-card">
-                        <div class="summary-value total-value">{results['total_reports']:,}</div>
-                        <div class="summary-label">Total {report_type} Reports</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-value">{station}</div>
-                        <div class="summary-label">Station</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-value">{report_type}</div>
-                        <div class="summary-label">Report Type</div>
-                    </div>
-                </div>
-                
-                <h3 style="margin-bottom: 20px;">Monthly Results:</h3>
-                <div class="month-grid">
+                    
+                    <div class="main-content">
+                        <!-- Left Panel: Summary -->
+                        <div class="summary-panel">
+                            <div class="summary-grid">
+                                <div class="summary-card">
+                                    <div class="summary-value success-value">{results['total_success']}/12</div>
+                                    <div class="summary-label">Successful Months</div>
+                                </div>
+                                <div class="summary-card">
+                                    <div class="summary-value total-value">{results['total_reports']:,}</div>
+                                    <div class="summary-label">Total {report_type} Reports</div>
+                                </div>
+                                <div class="summary-card">
+                                    <div class="summary-value">{station}</div>
+                                    <div class="summary-label">Station</div>
+                                </div>
+                                <div class="summary-card">
+                                    <div class="summary-value">{report_type}</div>
+                                    <div class="summary-label">Report Type</div>
+                                </div>
+                            </div>
+                            
+                            <div class="note-box">
+                                <strong>Processing Details:</strong><br>
+                                ✓ Files: {report_type}YYYYMM.txt<br>
+                                ✓ Type: {'TAF (tipo=FC)' if report_type == 'TAF' else 'METAR (tipo=SA)'}<br>
+                                ✓ Batches: 3 months at a time<br>
+                                ✓ Folder: {results['folder']}.zip
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <a href="/file/{results['folder']}" class="action-btn download-btn">
+                                    📥 Download All Files
+                                </a>
+                                <a href="/" class="action-btn back-btn">
+                                    ← New Download
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Panel: Months -->
+                        <div class="months-panel">
+                            <h3 style="margin-bottom: 15px; color: #333;">Monthly Results:</h3>
+                            <div class="month-grid">
         """
         
         # Add month cards
         for result in results['results']:
             status_class = 'month-success' if result['success'] else 'month-failed'
             html += f"""
-                    <div class="month-card {status_class}">
-                        <div class="month-name">{result['month_name']}</div>
-                        <div class="month-reports">
-                            {result['reports'] if result['success'] else '❌'}
-                        </div>
-                        <div style="font-size: 0.9rem; color: #666;">
-                            {result['month']}
-                        </div>
-                    </div>
+                                <div class="month-card {status_class}">
+                                    <div class="month-name">{result['month_name']}</div>
+                                    <div class="month-reports">
+                                        {result['reports'] if result['success'] else '❌'}
+                                    </div>
+                                    <div style="font-size: 0.8rem; color: #666;">
+                                        {result['month']}
+                                    </div>
+                                </div>
             """
         
-        # Different note for METAR vs TAF
-        if report_type == 'TAF':
-            note_text = "✓ TAF cleaning"
-        else:
-            note_text = "✓ METAR cleaning"
-        
         html += f"""
-                </div>
-                
-                <div class="note-box">
-                    <strong>{note_text}</strong><br>
-                    Files saved with original naming: {report_type}YYYYMM.txt<br>
-                    Downloaded in batches of 3 months with delays.<br>
-                    Report type: {'TAF (tipo=FC)' if report_type == 'TAF' else 'METAR (tipo=SA)'}
-                </div>
-                
-                <div class="action-buttons">
-                    <a href="/file/{results['folder']}" class="action-btn download-btn">
-                        📥 Download All {report_type} Files (Folder)
-                    </a>
-                    <a href="/" class="action-btn back-btn">
-                        ← New Download
-                    </a>
+                            </div>
+                            <div style="margin-top: 20px; color: #666; font-size: 0.9rem;">
+                                <strong>Folder Structure:</strong><br>
+                                {results['folder']}/<br>
+                                ├── {report_type}{year}01.txt<br>
+                                ├── {report_type}{year}02.txt<br>
+                                └── ... (all 12 months)
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </body>
