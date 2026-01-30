@@ -29,367 +29,447 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>METAR/TAF Smart Downloader</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>METAR/TAF Smart Downloader | AJAY</title>
             <style>
                 * {
                     margin: 0;
                     padding: 0;
                     box-sizing: border-box;
                 }
+                
                 body {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     min-height: 100vh;
-                    padding: 20px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
+                    padding: 40px 20px;
+                    color: #333;
                 }
+                
                 .container {
-                    display: flex;
-                    width: 95%;
                     max-width: 1400px;
-                    gap: 30px;
+                    margin: 0 auto;
                 }
+                
                 .glass-card {
-                    background: rgba(255, 255, 255, 0.95);
-                    backdrop-filter: blur(10px);
-                    border-radius: 20px;
-                    padding: 40px;
-                    width: 100%;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    background: rgba(255, 255, 255, 0.97);
+                    backdrop-filter: blur(20px);
+                    border-radius: 24px;
+                    padding: 50px;
+                    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    margin-bottom: 30px;
                 }
+                
                 .header {
                     text-align: center;
-                    margin-bottom: 40px;
-                    padding-bottom: 20px;
+                    margin-bottom: 50px;
+                    padding-bottom: 30px;
                     border-bottom: 2px solid rgba(102, 126, 234, 0.1);
                 }
+                
                 .header h1 {
-                    font-size: 2.8rem;
+                    font-size: 3.5rem;
                     background: linear-gradient(90deg, #667eea, #764ba2);
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
-                    margin-bottom: 10px;
+                    margin-bottom: 15px;
+                    font-weight: 800;
+                    letter-spacing: -0.5px;
                 }
+                
                 .header p {
                     color: #666;
-                    font-size: 1.2rem;
+                    font-size: 1.3rem;
+                    max-width: 800px;
+                    margin: 0 auto;
+                    line-height: 1.6;
                 }
-                .content-wrapper {
+                
+                .main-content {
+                    display: grid;
+                    grid-template-columns: 1fr 1.2fr;
+                    gap: 50px;
+                    margin-bottom: 40px;
+                }
+                
+                .left-panel {
                     display: flex;
+                    flex-direction: column;
                     gap: 40px;
                 }
-                .form-column {
-                    flex: 1;
-                    min-width: 500px;
+                
+                .right-panel {
+                    background: rgba(248, 249, 250, 0.8);
+                    border-radius: 20px;
+                    padding: 35px;
+                    border: 1px solid rgba(224, 224, 224, 0.5);
                 }
-                .info-column {
-                    flex: 1;
-                    min-width: 500px;
-                }
+                
                 .form-section {
-                    margin-bottom: 30px;
                     background: white;
-                    padding: 25px;
-                    border-radius: 15px;
+                    padding: 35px;
+                    border-radius: 20px;
                     border: 1px solid #e0e0e0;
-                    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
                 }
+                
                 .section-title {
                     display: flex;
                     align-items: center;
-                    margin-bottom: 20px;
+                    margin-bottom: 25px;
                     color: #333;
-                    font-size: 1.3rem;
-                    font-weight: 600;
-                }
-                .section-title .icon {
-                    margin-right: 12px;
                     font-size: 1.4rem;
+                    font-weight: 700;
                 }
+                
+                .section-title .icon {
+                    margin-right: 15px;
+                    font-size: 1.8rem;
+                }
+                
                 .input-group {
-                    margin-bottom: 20px;
+                    margin-bottom: 30px;
                 }
+                
                 .input-label {
                     display: block;
-                    margin-bottom: 10px;
+                    margin-bottom: 12px;
                     color: #555;
                     font-weight: 600;
                     font-size: 1.1rem;
                 }
+                
                 .input-field {
                     width: 100%;
-                    padding: 16px;
+                    padding: 18px 20px;
                     border: 2px solid #e0e0e0;
-                    border-radius: 12px;
+                    border-radius: 14px;
                     font-size: 1.1rem;
-                    transition: all 0.3s;
+                    transition: all 0.3s ease;
                     background: white;
+                    font-family: inherit;
                 }
+                
                 .input-field:focus {
                     border-color: #667eea;
                     outline: none;
-                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+                    transform: translateY(-1px);
                 }
-                .report-type-group {
-                    display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    gap: 15px;
-                    margin: 20px 0;
-                }
-                .report-type-card {
-                    background: white;
-                    padding: 25px;
-                    border-radius: 12px;
-                    border: 2px solid #e0e0e0;
-                    text-align: center;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                }
-                .report-type-card:hover {
-                    border-color: #667eea;
-                    transform: translateY(-2px);
-                }
-                .report-type-card.selected {
-                    background: #667eea;
-                    color: white;
-                    border-color: #667eea;
-                    transform: translateY(-2px);
-                    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-                }
-                .report-type-icon {
-                    font-size: 2.2rem;
-                    margin-bottom: 12px;
-                }
-                .report-type-name {
-                    font-size: 1.3rem;
-                    font-weight: bold;
-                    margin-bottom: 8px;
-                }
-                .report-type-desc {
-                    font-size: 0.95rem;
-                    opacity: 0.9;
-                }
-                .quick-stations {
-                    display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    gap: 15px;
-                    margin: 20px 0;
-                }
-                .station-card {
-                    background: white;
-                    padding: 20px;
-                    border-radius: 12px;
-                    border: 2px solid #e0e0e0;
-                    text-align: center;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                }
-                .station-card:hover {
-                    border-color: #667eea;
-                    transform: translateY(-2px);
-                    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-                }
-                .station-card.highlight {
-                    background: #667eea;
-                    color: white;
-                    border-color: #667eea;
-                }
-                .station-card.highlight .station-code {
-                    color: white;
-                }
-                .station-card.highlight .station-name {
-                    color: rgba(255, 255, 255, 0.9);
-                }
-                .station-code {
-                    font-size: 1.8rem;
-                    font-weight: bold;
-                    color: #667eea;
-                    margin-bottom: 8px;
-                }
-                .station-name {
-                    color: #666;
-                    font-size: 0.95rem;
-                }
+                
                 .radio-group {
-                    display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    gap: 15px;
+                    display: flex;
+                    gap: 20px;
                     margin: 20px 0;
                 }
+                
                 .radio-option {
-                    text-align: center;
+                    flex: 1;
                 }
+                
                 .radio-input {
                     display: none;
                 }
+                
                 .radio-label {
                     display: block;
-                    padding: 18px;
+                    padding: 25px;
                     background: #f8f9fa;
                     border: 2px solid #e0e0e0;
-                    border-radius: 12px;
+                    border-radius: 14px;
                     cursor: pointer;
-                    transition: all 0.3s;
-                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    font-weight: 600;
+                    text-align: center;
                     font-size: 1.1rem;
                 }
+                
                 .radio-input:checked + .radio-label {
-                    background: #667eea;
+                    background: linear-gradient(135deg, #667eea, #764ba2);
                     color: white;
                     border-color: #667eea;
-                    transform: translateY(-2px);
-                    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+                    transform: translateY(-3px);
+                    box-shadow: 0 12px 25px rgba(102, 126, 234, 0.25);
                 }
-                .year-month-group {
+                
+                .report-type-group {
                     display: grid;
-                    grid-template-columns: 1fr 1fr;
+                    grid-template-columns: repeat(2, 1fr);
                     gap: 20px;
+                    margin: 25px 0;
                 }
-                #monthSelection {
-                    grid-column: span 2;
-                }
-                .action-buttons {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 20px;
-                    margin-top: 30px;
-                }
-                .btn {
-                    padding: 20px;
-                    border: none;
-                    border-radius: 12px;
-                    font-size: 1.2rem;
-                    font-weight: 600;
+                
+                .report-type-card {
+                    background: white;
+                    padding: 30px;
+                    border-radius: 18px;
+                    border: 2px solid #e0e0e0;
+                    text-align: center;
                     cursor: pointer;
-                    transition: all 0.3s;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                }
+                
+                .report-type-card:hover {
+                    border-color: #667eea;
+                    transform: translateY(-3px);
+                    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+                }
+                
+                .report-type-card.selected {
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    color: white;
+                    border-color: #667eea;
+                    transform: translateY(-3px);
+                    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+                }
+                
+                .report-type-icon {
+                    font-size: 3rem;
+                    margin-bottom: 15px;
+                }
+                
+                .report-type-name {
+                    font-size: 1.4rem;
+                    font-weight: 700;
+                    margin-bottom: 8px;
+                }
+                
+                .report-type-desc {
+                    font-size: 0.95rem;
+                    opacity: 0.9;
+                    line-height: 1.4;
+                }
+                
+                .quick-stations {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 20px;
+                    margin: 30px 0;
+                }
+                
+                .station-card {
+                    background: white;
+                    padding: 25px;
+                    border-radius: 16px;
+                    border: 2px solid #e0e0e0;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
+                
+                .station-card:hover {
+                    border-color: #667eea;
+                    transform: translateY(-3px);
+                    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+                }
+                
+                .station-code {
+                    font-size: 2.2rem;
+                    font-weight: 800;
+                    color: #667eea;
+                    margin-bottom: 8px;
+                    letter-spacing: 1px;
+                }
+                
+                .station-name {
+                    color: #666;
+                    font-size: 1rem;
+                    font-weight: 500;
+                }
+                
+                .highlight {
+                    background: linear-gradient(135deg, #fff9e6, #fff3cd);
+                    border: 2px solid #ffc107;
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 20px rgba(255, 193, 7, 0.15);
+                }
+                
+                .action-section {
+                    margin-top: 40px;
+                }
+                
+                .button-group {
+                    display: flex;
+                    gap: 25px;
+                    margin-top: 40px;
+                }
+                
+                .btn {
+                    flex: 1;
+                    padding: 25px;
+                    border: none;
+                    border-radius: 16px;
+                    font-size: 1.3rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 12px;
+                    gap: 15px;
+                    letter-spacing: 0.5px;
                 }
+                
                 .btn-primary {
-                    background: linear-gradient(90deg, #667eea, #764ba2);
+                    background: linear-gradient(135deg, #667eea, #764ba2);
                     color: white;
                 }
+                
                 .btn-primary:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+                    transform: translateY(-4px);
+                    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
                 }
+                
                 .btn-secondary {
                     background: #f8f9fa;
                     color: #555;
                     border: 2px solid #e0e0e0;
                 }
+                
                 .btn-secondary:hover {
                     background: #e9ecef;
-                    transform: translateY(-2px);
+                    transform: translateY(-3px);
+                    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
                 }
-                .status-bar {
-                    margin-top: 30px;
-                    padding: 20px;
-                    background: #f8f9fa;
-                    border-radius: 15px;
-                    text-align: center;
-                    color: #666;
-                    font-size: 1rem;
-                    border: 1px solid #e0e0e0;
-                }
+                
                 .info-panel {
-                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                    padding: 25px;
-                    border-radius: 15px;
-                    border: 1px solid #dee2e6;
-                    height: 100%;
+                    background: white;
+                    border-radius: 20px;
+                    padding: 35px;
+                    border: 1px solid #e0e0e0;
+                    margin-bottom: 30px;
                 }
+                
                 .info-title {
+                    font-size: 1.5rem;
+                    font-weight: 700;
                     color: #333;
-                    font-size: 1.3rem;
-                    margin-bottom: 20px;
-                    font-weight: 600;
+                    margin-bottom: 25px;
                     display: flex;
                     align-items: center;
-                    gap: 10px;
+                    gap: 12px;
                 }
+                
                 .info-content {
                     color: #666;
-                    font-size: 1rem;
+                    line-height: 1.7;
+                    font-size: 1.05rem;
+                }
+                
+                .info-content ul {
+                    margin: 20px 0;
+                    padding-left: 25px;
+                }
+                
+                .info-content li {
+                    margin-bottom: 12px;
+                }
+                
+                .sample-output {
+                    background: #f8f9fa;
+                    border-radius: 15px;
+                    padding: 25px;
+                    margin-top: 25px;
+                    border: 1px solid #e0e0e0;
+                }
+                
+                .sample-title {
+                    font-weight: 600;
+                    color: #555;
+                    margin-bottom: 15px;
+                    font-size: 1.1rem;
+                }
+                
+                .sample-code {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 10px;
+                    font-family: 'Courier New', monospace;
+                    font-size: 0.95rem;
+                    line-height: 1.5;
+                    overflow-x: auto;
+                    border: 1px solid #e0e0e0;
+                }
+                
+                .status-bar {
+                    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+                    padding: 30px;
+                    border-radius: 20px;
+                    text-align: center;
+                    border: 1px solid rgba(224, 224, 224, 0.5);
+                    margin-top: 40px;
+                }
+                
+                .status-bar p {
+                    color: #666;
+                    font-size: 1.1rem;
                     line-height: 1.6;
                 }
-                .info-list {
-                    list-style: none;
-                    padding: 0;
-                    margin: 20px 0;
-                }
-                .info-list li {
-                    margin-bottom: 15px;
-                    padding-left: 30px;
-                    position: relative;
-                }
-                .info-list li:before {
-                    content: "✓";
-                    position: absolute;
-                    left: 0;
-                    color: #667eea;
-                    font-weight: bold;
-                    font-size: 1.2rem;
-                }
+                
                 .loading {
                     display: none;
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(255, 255, 255, 0.95);
-                    backdrop-filter: blur(10px);
-                    z-index: 1000;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
+                    text-align: center;
+                    padding: 60px;
+                    background: white;
+                    border-radius: 20px;
+                    margin: 40px 0;
+                    border: 1px solid #e0e0e0;
                 }
+                
                 .spinner {
-                    width: 60px;
-                    height: 60px;
+                    width: 70px;
+                    height: 70px;
                     border: 6px solid #f3f3f3;
                     border-top: 6px solid #667eea;
                     border-radius: 50%;
                     animation: spin 1s linear infinite;
-                    margin-bottom: 25px;
+                    margin: 0 auto 30px;
                 }
+                
                 @keyframes spin {
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(360deg); }
                 }
+                
+                .footer {
+                    text-align: center;
+                    color: rgba(255, 255, 255, 0.8);
+                    margin-top: 40px;
+                    font-size: 0.95rem;
+                }
+                
+                /* Responsive adjustments */
                 @media (max-width: 1200px) {
-                    .container {
-                        width: 98%;
-                        gap: 20px;
+                    .main-content {
+                        grid-template-columns: 1fr;
+                        gap: 40px;
+                    }
+                    
+                    .header h1 {
+                        font-size: 3rem;
                     }
                 }
-                @media (max-width: 1024px) {
-                    .content-wrapper {
-                        flex-direction: column;
-                    }
-                    .form-column, .info-column {
-                        min-width: 100%;
-                    }
-                }
+                
                 @media (max-width: 768px) {
                     .glass-card {
-                        padding: 25px;
+                        padding: 30px;
                     }
+                    
                     .header h1 {
-                        font-size: 2.2rem;
+                        font-size: 2.5rem;
                     }
-                    .year-month-group {
+                    
+                    .button-group {
+                        flex-direction: column;
+                    }
+                    
+                    .report-type-group {
                         grid-template-columns: 1fr;
-                    }
-                    #monthSelection {
-                        grid-column: span 1;
                     }
                 }
             </style>
@@ -398,198 +478,193 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
             <div class="container">
                 <div class="glass-card">
                     <div class="header">
-                        <h1>🌤️ METAR/TAF Smart Downloader</h1>
-                        <p>Download aviation weather reports (METAR/TAF)</p>
+                        <h1>🌤️ METAR/TAF Downloader</h1>
+                        <p>Professional Aviation Weather Data Download Tool | Developed by AJAY YADAV (IMD GOA)</p>
                     </div>
                     
-                    <div class="content-wrapper">
-                        <!-- Left Column: Input Form -->
-                        <div class="form-column">
-                            <form id="downloadForm">
-                                <!-- Report Type -->
-                                <div class="form-section">
-                                    <div class="section-title">
-                                        <span class="icon">📋</span>
-                                        <span>Report Type</span>
-                                    </div>
-                                    <div class="report-type-group">
-                                        <div class="report-type-card selected" onclick="selectReportType('METAR')" id="metarCard">
-                                            <div class="report-type-icon">🌤️</div>
-                                            <div class="report-type-name">METAR</div>
-                                            <div class="report-type-desc">Aviation Routine Weather Report</div>
-                                        </div>
-                                        <div class="report-type-card" onclick="selectReportType('TAF')" id="tafCard">
-                                            <div class="report-type-icon">📡</div>
-                                            <div class="report-type-name">TAF</div>
-                                            <div class="report-type-desc">Terminal Aerodrome Forecast</div>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" id="reportType" name="reportType" value="METAR">
+                    <div class="main-content">
+                        <div class="left-panel">
+                            <!-- Report Type Selection -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <span class="icon">📋</span>
+                                    <span>Report Type Selection</span>
                                 </div>
-                                
-                                <!-- Station Information -->
-                                <div class="form-section">
-                                    <div class="section-title">
-                                        <span class="icon">📍</span>
-                                        <span>Station Information</span>
+                                <div class="report-type-group">
+                                    <div class="report-type-card selected" onclick="selectReportType('METAR')" id="metarCard">
+                                        <div class="report-type-icon">🌤️</div>
+                                        <div class="report-type-name">METAR</div>
+                                        <div class="report-type-desc">Aviation Routine Weather Report</div>
                                     </div>
-                                    <div class="input-group">
-                                        <label class="input-label">ICAO Station Code</label>
-                                        <input type="text" class="input-field" id="station" name="station" value="VOGA" 
-                                               maxlength="4" required pattern="[A-Z]{4}" placeholder="Enter 4-letter ICAO code">
-                                    </div>
-                                    <div class="quick-stations">
-                                        <div class="station-card highlight" onclick="setStation('VOGA')">
-                                            <div class="station-code">VOGA</div>
-                                            <div class="station-name">GOA (MOPA)</div>
-                                        </div>
-                                        <div class="station-card" onclick="setStation('VOMM')">
-                                            <div class="station-code">VOMM</div>
-                                            <div class="station-name">Chennai</div>
-                                        </div>
-                                        <div class="station-card" onclick="setStation('VABB')">
-                                            <div class="station-code">VABB</div>
-                                            <div class="station-name">Mumbai</div>
-                                        </div>
-                                        <div class="station-card" onclick="setStation('VIDP')">
-                                            <div class="station-code">VIDP</div>
-                                            <div class="station-name">Delhi</div>
-                                        </div>
+                                    <div class="report-type-card" onclick="selectReportType('TAF')" id="tafCard">
+                                        <div class="report-type-icon">📡</div>
+                                        <div class="report-type-name">TAF</div>
+                                        <div class="report-type-desc">Terminal Aerodrome Forecast</div>
                                     </div>
                                 </div>
-                                
-                                <!-- Time Period -->
-                                <div class="form-section">
-                                    <div class="section-title">
-                                        <span class="icon">📅</span>
-                                        <span>Time Period</span>
-                                    </div>
-                                    <div class="year-month-group">
-                                        <div class="input-group">
-                                            <label class="input-label">Year</label>
-                                            <input type="number" class="input-field" id="year" name="year" value="2025" min="2000" max="2026" required>
-                                        </div>
-                                        <div class="input-group">
-                                            <label class="input-label">Download Mode</label>
-                                            <div class="radio-group">
-                                                <div class="radio-option">
-                                                    <input type="radio" id="single" name="mode" value="single" checked class="radio-input">
-                                                    <label for="single" class="radio-label">📁 Single Month</label>
-                                                </div>
-                                                <div class="radio-option">
-                                                    <input type="radio" id="all" name="mode" value="all" class="radio-input">
-                                                    <label for="all" class="radio-label">📦 All 12 Months</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="monthSelection">
-                                        <div class="input-group">
-                                            <label class="input-label">Month</label>
-                                            <select class="input-field" id="month" name="month">
-                                                <option value="01">January</option>
-                                                <option value="02">February</option>
-                                                <option value="03">March</option>
-                                                <option value="04">April</option>
-                                                <option value="05">May</option>
-                                                <option value="06">June</option>
-                                                <option value="07">July</option>
-                                                <option value="08">August</option>
-                                                <option value="09">September</option>
-                                                <option value="10">October</option>
-                                                <option value="11">November</option>
-                                                <option value="12">December</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Action Buttons -->
-                                <div class="action-buttons">
-                                    <button type="button" class="btn btn-primary" onclick="startDownload()">
-                                        <span>🚀</span>
-                                        <span>Start Download</span>
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                                        <span>↺</span>
-                                        <span>Reset Form</span>
-                                    </button>
-                                </div>
-                            </form>
+                                <input type="hidden" id="reportType" name="reportType" value="METAR">
+                            </div>
                             
-                            <!-- Status Bar -->
-                            <div class="status-bar">
-                                <p>📊 It may take a while...The site is busy pondering its existence.</p>
-                                <p style="margin-top: 10px; font-size: 0.95rem;">
-                                    <strong>Contact:</strong> AJAY YADAV (IMD GOA)<br>
-                                    <strong>Email:</strong> ajaypahe02@gmail.com
-                                </p>
+                            <!-- Station Information -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <span class="icon">📍</span>
+                                    <span>Station Configuration</span>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">ICAO Station Code (4 Letters)</label>
+                                    <input type="text" class="input-field" id="station" name="station" value="VOGA" 
+                                           maxlength="4" required pattern="[A-Z]{4}" 
+                                           placeholder="Enter 4-letter ICAO code (e.g., VOGA)">
+                                </div>
+                                <div class="quick-stations">
+                                    <div class="station-card highlight" onclick="setStation('VOGA')">
+                                        <div class="station-code">VOGA</div>
+                                        <div class="station-name">GOA International (MOPA)</div>
+                                    </div>
+                                    <div class="station-card" onclick="setStation('VOMM')">
+                                        <div class="station-code">VOMM</div>
+                                        <div class="station-name">Chennai International</div>
+                                    </div>
+                                    <div class="station-card" onclick="setStation('VABB')">
+                                        <div class="station-code">VABB</div>
+                                        <div class="station-name">Mumbai International</div>
+                                    </div>
+                                    <div class="station-card" onclick="setStation('VIDP')">
+                                        <div class="station-code">VIDP</div>
+                                        <div class="station-name">Delhi International</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Time Period -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <span class="icon">📅</span>
+                                    <span>Time Period Selection</span>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Year</label>
+                                    <input type="number" class="input-field" id="year" name="year" 
+                                           value="2024" min="2000" max="2026" required>
+                                </div>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" id="single" name="mode" value="single" checked class="radio-input">
+                                        <label for="single" class="radio-label">📁 Single Month Download</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="all" name="mode" value="all" class="radio-input">
+                                        <label for="all" class="radio-label">📦 All 12 Months (Batch)</label>
+                                    </div>
+                                </div>
+                                <div id="monthSelection">
+                                    <div class="input-group">
+                                        <label class="input-label">Select Month</label>
+                                        <select class="input-field" id="month" name="month">
+                                            <option value="01">January</option>
+                                            <option value="02">February</option>
+                                            <option value="03">March</option>
+                                            <option value="04">April</option>
+                                            <option value="05">May</option>
+                                            <option value="06">June</option>
+                                            <option value="07">July</option>
+                                            <option value="08">August</option>
+                                            <option value="09">September</option>
+                                            <option value="10">October</option>
+                                            <option value="11">November</option>
+                                            <option value="12">December</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
-                        <!-- Right Column: Information -->
-                        <div class="info-column">
+                        <div class="right-panel">
+                            <!-- Information Panel -->
                             <div class="info-panel">
                                 <div class="info-title">
                                     <span>ℹ️</span>
-                                    <span>Application Features</span>
-                                </div>
-                                <ul class="info-list">
-                                    <li>Download METAR/TAF reports from OGIMET database</li>
-                                    <li>Single month or all 12 months batch download</li>
-                                    <li>Automatic data cleaning and formatting</li>
-                                    <li>Original file naming: METARYYYYMM.txt / TAFYYYYMM.txt</li>
-                                    <li>Batch processing with intelligent delays</li>
-                                    <li>Quick station selection for Indian airports</li>
-                                </ul>
-                                
-                                <div class="info-title" style="margin-top: 30px;">
-                                    <span>⚡</span>
-                                    <span>How to Use</span>
+                                    <span>Application Information</span>
                                 </div>
                                 <div class="info-content">
-                                    <p>1. Select report type (METAR or TAF)</p>
-                                    <p>2. Enter ICAO station code or click quick station</p>
-                                    <p>3. Choose year and download mode</p>
-                                    <p>4. For single month, select specific month</p>
-                                    <p>5. Click Start Download button</p>
-                                    <p>6. Wait for processing and download file</p>
+                                    <p>This tool allows you to download METAR and TAF weather reports from OGIMET database with automatic cleaning and formatting.</p>
+                                    
+                                    <strong>Key Features:</strong>
+                                    <ul>
+                                        <li><strong>Dual Report Type:</strong> Download both METAR and TAF reports</li>
+                                        <li><strong>Intelligent Cleaning:</strong> Automatic timestamp removal and formatting</li>
+                                        <li><strong>Batch Processing:</strong> Download all 12 months at once</li>
+                                        <li><strong>Quick Stations:</strong> One-click access to major Indian airports</li>
+                                        <li><strong>Professional Output:</strong> Clean, formatted text files ready for analysis</li>
+                                    </ul>
+                                    
+                                    <div class="sample-output">
+                                        <div class="sample-title">Sample Output Format:</div>
+                                        <div class="sample-code" id="sampleOutput">
+                                            <!-- Sample will be populated by JavaScript -->
+                                        </div>
+                                    </div>
                                 </div>
-                                
-                                <div class="info-title" style="margin-top: 30px;">
-                                    <span>✅</span>
-                                    <span>Recommended Stations</span>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="action-section">
+                                <div class="button-group">
+                                    <button type="button" class="btn btn-primary" onclick="startDownload()">
+                                        <span>🚀</span>
+                                        <span>START DOWNLOAD</span>
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                        <span>↻</span>
+                                        <span>RESET FORM</span>
+                                    </button>
                                 </div>
-                                <div class="info-content">
-                                    <p><strong>VOGA (GOA)</strong> - Tested & verified</p>
-                                    <p><strong>VOMM (Chennai)</strong> - Major international airport</p>
-                                    <p><strong>VABB (Mumbai)</strong> - Busiest airport in India</p>
-                                    <p><strong>VIDP (Delhi)</strong> - Capital city airport</p>
-                                </div>
-                                
-                                <div class="info-title" style="margin-top: 30px;">
-                                    <span>⏱️</span>
-                                    <span>Processing Time</span>
-                                </div>
-                                <div class="info-content">
-                                    <p><strong>Single Month:</strong> 10-30 seconds</p>
-                                    <p><strong>All 12 Months:</strong> 1-2 minutes (batches of 3)</p>
-                                    <p><strong>Note:</strong> OGIMET server may have delays</p>
-                                </div>
+                            </div>
+                            
+                            <!-- Loading Section -->
+                            <div id="loading" class="loading">
+                                <div class="spinner"></div>
+                                <h3>Processing Your Request...</h3>
+                                <p id="statusText">Downloading weather data. Please wait while we process your request.</p>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Status Bar -->
+                    <div class="status-bar">
+                        <p>
+                            <strong>📊 Processing Information:</strong> Downloads may take 30-60 seconds depending on data volume.<br>
+                            <strong>👨‍💻 Developer:</strong> AJAY YADAV (IMD GOA)<br>
+                            <strong>📧 Contact:</strong> ajaypahe02@gmail.com
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p>METAR/TAF Downloader v2.0 | Designed for Desktop Use | © 2024</p>
                 </div>
             </div>
             
-            <!-- Loading Overlay -->
-            <div id="loading" class="loading" style="display: none;">
-                <div class="spinner"></div>
-                <h3 id="statusText">Downloading Data...</h3>
-                <p id="loadingDetails">Please wait while we process your request</p>
-            </div>
-            
             <script>
+                // Initialize sample output based on selected report type
+                function updateSampleOutput() {
+                    const reportType = document.getElementById('reportType').value;
+                    const sampleDiv = document.getElementById('sampleOutput');
+                    
+                    if (reportType === 'METAR') {
+                        sampleDiv.innerHTML = `METAR VOGA 010000Z 15006KT 3500 HZ NSC 28/22 Q1012 NOSIG=<br>
+METAR VOGA 010030Z 15005KT 3500 HZ NSC 28/23 Q1012 NOSIG=<br>
+METAR VOGA 010100Z 16006KT 3500 HZ NSC 28/22 Q1012 NOSIG=`;
+                    } else {
+                        sampleDiv.innerHTML = `TAF VOGA 070800Z 0709/0718 09015KT 5000 HZ FU NSC<br>
+&nbsp;&nbsp;&nbsp;&nbsp;BECMG 0710/0712 31008KT<br>
+&nbsp;&nbsp;&nbsp;&nbsp;BECMG 0714/0716 03007KT 3000 HZ FU=<br>
+TAF VOGA 071400Z 0715/0724 03006KT 3000 HZ NSC<br>
+&nbsp;&nbsp;&nbsp;&nbsp;BECMG 0721/0723 09006KT=`;
+                    }
+                }
+                
                 function selectReportType(type) {
                     document.getElementById('reportType').value = type;
                     
@@ -610,6 +685,9 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                             card.classList.add('highlight');
                         }
                     });
+                    
+                    // Update sample output
+                    updateSampleOutput();
                 }
                 
                 function setStation(code) {
@@ -641,11 +719,14 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     }
                     
                     // Show loading
-                    document.getElementById('loading').style.display = 'flex';
+                    document.getElementById('loading').style.display = 'block';
+                    document.querySelectorAll('.form-section, .action-section').forEach(el => {
+                        el.style.opacity = '0.5';
+                        el.style.pointerEvents = 'none';
+                    });
                     
                     // Update status
                     const statusText = document.getElementById('statusText');
-                    const loadingDetails = document.getElementById('loadingDetails');
                     const monthNames = {
                         '01': 'January', '02': 'February', '03': 'March', '04': 'April',
                         '05': 'May', '06': 'June', '07': 'July', '08': 'August',
@@ -653,12 +734,10 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     };
                     
                     if (mode === 'all') {
-                        statusText.textContent = `Downloading ALL months of ${reportType} for ${station} ${year}...`;
-                        loadingDetails.textContent = 'Processing in batches of 3 months with delays...';
+                        statusText.textContent = `Downloading ALL 12 months of ${reportType} data for ${station} station (Year: ${year})...`;
                     } else {
                         const monthName = monthNames[month] || month;
-                        statusText.textContent = `Downloading ${reportType} ${station} ${monthName} ${year}...`;
-                        loadingDetails.textContent = 'Connecting to OGIMET server...';
+                        statusText.textContent = `Downloading ${reportType} data for ${station} station (${monthName} ${year})...`;
                     }
                     
                     // Redirect to download page
@@ -679,15 +758,35 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     // Update UI
                     selectReportType('METAR');
                     updateMonthVisibility();
+                    
+                    // Reset highlights
+                    document.querySelectorAll('.station-card').forEach(card => {
+                        card.classList.remove('highlight');
+                        if (card.querySelector('.station-code').textContent === 'VOGA') {
+                            card.classList.add('highlight');
+                        }
+                    });
                 }
                 
                 // Initialize
                 document.addEventListener('DOMContentLoaded', function() {
                     selectReportType('METAR');
                     updateMonthVisibility();
+                    updateSampleOutput();
                     
                     document.querySelectorAll('input[name="mode"]').forEach(radio => {
                         radio.addEventListener('change', updateMonthVisibility);
+                    });
+                    
+                    // Add keyboard shortcuts
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' && e.ctrlKey) {
+                            startDownload();
+                            e.preventDefault();
+                        }
+                        if (e.key === 'Escape') {
+                            resetForm();
+                        }
                     });
                 });
             </script>
@@ -970,19 +1069,11 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
             
             raw_data = response.text
             
-            # Debug: Save raw response
-            with open(f"debug_{report_type}_{station}_{year}{month}.html", "w", encoding="utf-8") as f:
-                f.write(raw_data)
-            
             # Apply cleaning based on report type
             if report_type == 'TAF':
                 clean_data = self.clean_taf_text_original(raw_data)
             else:
                 clean_data = self.clean_metar_text_original(raw_data)
-            
-            # Debug: Save cleaned response
-            with open(f"debug_clean_{report_type}_{station}_{year}{month}.txt", "w", encoding="utf-8") as f:
-                f.write(clean_data)
             
             return clean_data, raw_data
             
@@ -1029,7 +1120,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
         return '\n'.join(clean_reports)
 
     def clean_taf_text_original(self, text):
-        """ORIGINAL TAF cleaning"""
+        """ORIGINAL TAF cleaning - remove leading timestamps, keep BECMG/TEMPO"""
         lines = text.split('\n')
         clean_tafs = []
         current_taf = []
@@ -1119,170 +1210,225 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
         month_name = month_names.get(month, month)
         report_type_lower = report_type.lower()
         
+        # Desktop-optimized result page
         html = f"""
         <!DOCTYPE html>
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>Download Result</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Download Result | METAR/TAF Downloader</title>
             <style>
                 * {{
                     margin: 0;
                     padding: 0;
                     box-sizing: border-box;
                 }}
+                
                 body {{
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     min-height: 100vh;
-                    padding: 20px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
+                    padding: 40px 20px;
+                    color: #333;
                 }}
+                
                 .container {{
-                    display: flex;
-                    width: 95%;
-                    max-width: 1400px;
-                    gap: 30px;
+                    max-width: 1200px;
+                    margin: 0 auto;
                 }}
+                
                 .result-card {{
-                    background: rgba(255, 255, 255, 0.95);
-                    backdrop-filter: blur(10px);
-                    border-radius: 20px;
-                    padding: 40px;
-                    width: 100%;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    background: rgba(255, 255, 255, 0.97);
+                    backdrop-filter: blur(20px);
+                    border-radius: 24px;
+                    padding: 50px;
+                    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
                 }}
+                
                 .result-header {{
                     text-align: center;
-                    margin-bottom: 40px;
-                    padding-bottom: 20px;
+                    margin-bottom: 50px;
+                    padding-bottom: 30px;
                     border-bottom: 2px solid rgba(102, 126, 234, 0.1);
                 }}
+                
                 .result-icon {{
-                    font-size: 4rem;
-                    margin-bottom: 20px;
+                    font-size: 5rem;
+                    margin-bottom: 25px;
                 }}
+                
                 .success .result-icon {{
                     color: #10b981;
                 }}
+                
                 .error .result-icon {{
                     color: #ef4444;
                 }}
+                
                 .result-title {{
-                    font-size: 2.5rem;
-                    margin-bottom: 10px;
+                    font-size: 3rem;
+                    font-weight: 800;
+                    margin-bottom: 15px;
                     color: #333;
                 }}
-                .content-wrapper {{
-                    display: flex;
-                    gap: 40px;
+                
+                .result-subtitle {{
+                    color: #666;
+                    font-size: 1.3rem;
                 }}
-                .stats-column {{
-                    flex: 1;
-                    min-width: 500px;
-                }}
-                .preview-column {{
-                    flex: 1;
-                    min-width: 500px;
-                }}
+                
                 .stats-grid {{
                     display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    gap: 20px;
-                    margin: 30px 0;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 25px;
+                    margin: 50px 0;
                 }}
+                
                 .stat-card {{
                     background: white;
-                    padding: 25px;
-                    border-radius: 15px;
+                    padding: 35px;
+                    border-radius: 20px;
                     text-align: center;
-                    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+                    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
                     border: 1px solid #e0e0e0;
+                    transition: transform 0.3s ease;
                 }}
+                
+                .stat-card:hover {{
+                    transform: translateY(-5px);
+                }}
+                
                 .stat-value {{
-                    font-size: 2.5rem;
-                    font-weight: bold;
+                    font-size: 3rem;
+                    font-weight: 800;
                     color: #667eea;
-                    margin-bottom: 10px;
+                    margin-bottom: 15px;
                 }}
+                
                 .stat-label {{
                     color: #666;
-                    font-size: 1rem;
+                    font-size: 1.1rem;
+                    font-weight: 600;
                 }}
-                .file-preview {{
+                
+                .preview-section {{
                     background: #f8f9fa;
-                    padding: 25px;
-                    border-radius: 15px;
-                    margin: 30px 0;
+                    border-radius: 20px;
+                    padding: 40px;
+                    margin: 50px 0;
+                    border: 1px solid #e0e0e0;
                 }}
+                
+                .preview-title {{
+                    font-size: 1.8rem;
+                    font-weight: 700;
+                    margin-bottom: 25px;
+                    color: #333;
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                }}
+                
                 .preview-content {{
                     background: white;
-                    padding: 20px;
-                    border-radius: 10px;
-                    height: 350px;
+                    padding: 30px;
+                    border-radius: 15px;
+                    max-height: 500px;
                     overflow-y: auto;
                     font-family: 'Courier New', monospace;
-                    font-size: 14px;
-                    line-height: 1.5;
-                    white-space: pre-wrap;
+                    font-size: 15px;
+                    line-height: 1.6;
+                    border: 1px solid #e0e0e0;
                 }}
+                
                 .action-buttons {{
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 20px;
-                    margin-top: 40px;
+                    display: flex;
+                    gap: 30px;
+                    margin-top: 50px;
                 }}
+                
                 .action-btn {{
-                    padding: 20px;
+                    flex: 1;
+                    padding: 28px;
                     border: none;
-                    border-radius: 12px;
-                    font-size: 1.2rem;
-                    font-weight: 600;
+                    border-radius: 18px;
+                    font-size: 1.4rem;
+                    font-weight: 700;
                     cursor: pointer;
                     text-decoration: none;
                     text-align: center;
-                    transition: all 0.3s;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 18px;
                 }}
+                
                 .download-btn {{
-                    background: linear-gradient(90deg, #10b981, #059669);
+                    background: linear-gradient(135deg, #10b981, #059669);
                     color: white;
                 }}
+                
                 .download-btn:hover {{
-                    transform: translateY(-3px);
-                    box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+                    transform: translateY(-4px);
+                    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
                 }}
+                
                 .back-btn {{
                     background: #f8f9fa;
                     color: #555;
                     border: 2px solid #e0e0e0;
                 }}
+                
                 .back-btn:hover {{
                     background: #e9ecef;
-                    transform: translateY(-2px);
+                    transform: translateY(-3px);
+                    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
                 }}
+                
                 .note-box {{
-                    background: #fff3cd;
-                    border: 1px solid #ffc107;
-                    padding: 15px;
-                    border-radius: 10px;
-                    margin-top: 20px;
+                    background: linear-gradient(135deg, #fff9e6, #fff3cd);
+                    border: 2px solid #ffc107;
+                    padding: 25px;
+                    border-radius: 15px;
+                    margin-top: 30px;
                     color: #856404;
+                    font-size: 1.1rem;
+                    line-height: 1.6;
                 }}
-                .quick-stations {{
-                    display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    gap: 15px;
-                    margin: 30px 0;
+                
+                .error-details {{
+                    background: #f8d7da;
+                    color: #721c24;
+                    padding: 30px;
+                    border-radius: 15px;
+                    margin: 40px 0;
+                    border: 1px solid #f5c6cb;
                 }}
+                
                 @media (max-width: 1024px) {{
-                    .content-wrapper {{
+                    .stats-grid {{
+                        grid-template-columns: repeat(2, 1fr);
+                    }}
+                    
+                    .action-buttons {{
                         flex-direction: column;
                     }}
-                    .stats-column, .preview-column {{
-                        min-width: 100%;
+                }}
+                
+                @media (max-width: 768px) {{
+                    .result-card {{
+                        padding: 30px;
+                    }}
+                    
+                    .result-title {{
+                        font-size: 2.5rem;
+                    }}
+                    
+                    .stats-grid {{
+                        grid-template-columns: 1fr;
                     }}
                 }}
             </style>
@@ -1297,119 +1443,115 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                         <h1 class="result-title">
                             {'Download Successful!' if result['success'] else 'Download Failed'}
                         </h1>
-                        <p>{report_type} Report | Station: {station} | Month: {month_name} {year}</p>
+                        <p class="result-subtitle">
+                            {report_type} Report | Station: {station} | Month: {month_name} {year}
+                        </p>
                     </div>
-                    
-                    <div class="content-wrapper">
         """
         
         if result['success']:
             html += f"""
-                        <!-- Left Column: Stats -->
-                        <div class="stats-column">
-                            <div class="stats-grid">
-                                <div class="stat-card">
-                                    <div class="stat-value">{result['reports']}</div>
-                                    <div class="stat-label">{report_type} Reports</div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-value">{month_name}</div>
-                                    <div class="stat-label">Month</div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-value">{year}</div>
-                                    <div class="stat-label">Year</div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-value">{report_type}</div>
-                                    <div class="stat-label">Report Type</div>
-                                </div>
-                            </div>
-                            
-                            <div class="note-box">
-                                <strong>File Information:</strong><br>
-                                ✓ File saved as: {result['filename']}<br>
-                                ✓ Report type: {'TAF (tipo=FC)' if report_type == 'TAF' else 'METAR (tipo=SA)'}<br>
-                                ✓ Original cleaning applied
-                            </div>
-                            
-                            <div class="action-buttons">
-                                <a href="/file/{result['filename']}" class="action-btn download-btn">
-                                    📥 Download Clean {report_type} File
-                                </a>
-                                <a href="/" class="action-btn back-btn">
-                                    ← Download Another
-                                </a>
-                            </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">{result['reports']}</div>
+                            <div class="stat-label">{report_type} Reports</div>
                         </div>
-                        
-                        <!-- Right Column: Preview -->
-                        <div class="preview-column">
-                            <h3 style="margin-bottom: 20px; color: #333;">📄 Cleaned {report_type} File Preview:</h3>
-                            <div class="file-preview">
-                                <div class="preview-content">
+                        <div class="stat-card">
+                            <div class="stat-value">{month_name}</div>
+                            <div class="stat-label">Month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">{year}</div>
+                            <div class="stat-label">Year</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">{report_type}</div>
+                            <div class="stat-label">Report Type</div>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-section">
+                        <div class="preview-title">
+                            📄 Cleaned {report_type} File Preview
+                        </div>
+                        <div class="preview-content">
             """
             
             # Show cleaned content
             if result['clean_data']:
+                # Show first 25 lines
                 lines = result['clean_data'].split('\n')
                 for i, line in enumerate(lines[:25]):
                     html += f"{line}<br>"
                 if len(lines) > 25:
-                    html += f"<br>... and {len(lines) - 25} more lines"
+                    html += f"<br><em>... and {len(lines) - 25} more lines</em>"
             else:
                 html += "Preview not available"
             
             html += f"""
-                                </div>
-                            </div>
-                            <div style="margin-top: 20px; color: #666; font-size: 1rem;">
-                                <strong>Note:</strong> File saved with original naming format: {report_type}YYYYMM.txt
-                            </div>
                         </div>
+                        <div class="note-box">
+                            <strong>📝 Processing Information:</strong><br>
+                            {'✓ TAF cleaning: Leading timestamps removed, BECMG/TEMPO preserved' if report_type == 'TAF' else '✓ METAR cleaning: Timestamps removed, only clean METAR/SPECI reports'}<br>
+                            <strong>📁 File saved as:</strong> {result['filename']}<br>
+                            <strong>🔧 Report type:</strong> {'TAF (tipo=FC)' if report_type == 'TAF' else 'METAR (tipo=SA)'}
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="/file/{result['filename']}" class="action-btn download-btn">
+                            📥 Download {report_type} File
+                        </a>
+                        <a href="/" class="action-btn back-btn">
+                            ← Back to Downloader
+                        </a>
+                    </div>
             """
         else:
             html += f"""
-                        <!-- Error View -->
-                        <div style="flex: 1; text-align: center; padding: 30px;">
-                            <div style="font-size: 1.2rem; color: #666; margin-bottom: 30px; background: #f8f9fa; padding: 25px; border-radius: 15px;">
-                                <strong>Error:</strong> {result['error']}
-                            </div>
-                            
-                            <div style="background: white; padding: 30px; border-radius: 15px; margin: 30px 0; border: 1px solid #e0e0e0;">
-                                <h3 style="margin-bottom: 25px; color: #333;">Try These Stations:</h3>
-                                <div class="quick-stations">
-                                    <a href="/download?station=VOGA&year=2024&month=01&type={report_type_lower}" 
-                                       style="background: #667eea; color: white; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; display: block;">
-                                        <div style="font-size: 1.5rem; font-weight: bold;">VOGA</div>
-                                        <div style="font-size: 1rem;">GOA (Priority)</div>
-                                    </a>
-                                    <a href="/download?station=VOMM&year=2024&month=01&type={report_type_lower}" 
-                                       style="background: #f8f9fa; color: #333; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; display: block; border: 2px solid #e0e0e0;">
-                                        <div style="font-size: 1.5rem; font-weight: bold;">VOMM</div>
-                                        <div style="font-size: 1rem;">Chennai</div>
-                                    </a>
-                                    <a href="/download?station=VABB&year=2024&month=01&type={report_type_lower}" 
-                                       style="background: #f8f9fa; color: #333; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; display: block; border: 2px solid #e0e0e0;">
-                                        <div style="font-size: 1.5rem; font-weight: bold;">VABB</div>
-                                        <div style="font-size: 1rem;">Mumbai</div>
-                                    </a>
-                                    <a href="/download?station=VIDP&year=2024&month=01&type={report_type_lower}" 
-                                       style="background: #f8f9fa; color: #333; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; display: block; border: 2px solid #e0e0e0;">
-                                        <div style="font-size: 1.5rem; font-weight: bold;">VIDP</div>
-                                        <div style="font-size: 1rem;">Delhi</div>
-                                    </a>
-                                </div>
-                            </div>
-                            
-                            <a href="/" class="action-btn back-btn" style="max-width: 350px; margin: 0 auto;">
-                                ← Try Again
+                    <div class="error-details">
+                        <h3 style="margin-bottom: 20px; font-size: 1.5rem;">❌ Download Error</h3>
+                        <p style="font-size: 1.2rem; margin-bottom: 20px;"><strong>Error Details:</strong> {result['error']}</p>
+                        
+                        <h4 style="margin: 25px 0 15px; font-size: 1.3rem;">Troubleshooting Steps:</h4>
+                        <ul style="margin-left: 25px; font-size: 1.1rem;">
+                            <li>Verify station code is correct (4 uppercase letters)</li>
+                            <li>Check internet connection</li>
+                            <li>Try a different station or time period</li>
+                            <li>Ensure year is between 2000-2026</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 35px; border-radius: 20px; margin: 40px 0;">
+                        <h3 style="margin-bottom: 25px; font-size: 1.5rem;">Quick Test Stations:</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                            <a href="/download?station=VOGA&year=2024&month=01&type={report_type_lower}" 
+                               style="background: #667eea; color: white; padding: 22px; border-radius: 15px; text-decoration: none; text-align: center; font-weight: 600; font-size: 1.2rem;">
+                                VOGA (Priority Test)
+                            </a>
+                            <a href="/download?station=VOMM&year=2024&month=01&type={report_type_lower}" 
+                               style="background: #e0e0e0; color: #333; padding: 22px; border-radius: 15px; text-decoration: none; text-align: center; font-weight: 600; font-size: 1.2rem;">
+                                VOMM Chennai
+                            </a>
+                            <a href="/download?station=VABB&year=2024&month=01&type={report_type_lower}" 
+                               style="background: #e0e0e0; color: #333; padding: 22px; border-radius: 15px; text-decoration: none; text-align: center; font-weight: 600; font-size: 1.2rem;">
+                                VABB Mumbai
+                            </a>
+                            <a href="/download?station=VIDP&year=2024&month=01&type={report_type_lower}" 
+                               style="background: #e0e0e0; color: #333; padding: 22px; border-radius: 15px; text-decoration: none; text-align: center; font-weight: 600; font-size: 1.2rem;">
+                                VIDP Delhi
                             </a>
                         </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="/" class="action-btn back-btn" style="flex: 1;">
+                            ← Try Again
+                        </a>
+                    </div>
             """
         
         html += """
-                    </div>
                 </div>
             </div>
         </body>
@@ -1427,164 +1569,232 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>Batch Download Complete</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Batch Download Complete | METAR/TAF Downloader</title>
             <style>
                 * {{
                     margin: 0;
                     padding: 0;
                     box-sizing: border-box;
                 }}
+                
                 body {{
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     min-height: 100vh;
-                    padding: 20px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
+                    padding: 40px 20px;
+                    color: #333;
                 }}
+                
                 .container {{
-                    display: flex;
-                    width: 95%;
                     max-width: 1400px;
-                    gap: 30px;
+                    margin: 0 auto;
                 }}
+                
                 .result-card {{
-                    background: rgba(255, 255, 255, 0.95);
-                    backdrop-filter: blur(10px);
-                    border-radius: 20px;
-                    padding: 40px;
-                    width: 100%;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    background: rgba(255, 255, 255, 0.97);
+                    backdrop-filter: blur(20px);
+                    border-radius: 24px;
+                    padding: 50px;
+                    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
                 }}
+                
                 .header {{
                     text-align: center;
-                    margin-bottom: 40px;
-                    padding-bottom: 20px;
+                    margin-bottom: 50px;
+                    padding-bottom: 30px;
                     border-bottom: 2px solid rgba(102, 126, 234, 0.1);
                 }}
+                
                 .header h1 {{
-                    font-size: 2.5rem;
+                    font-size: 3.5rem;
+                    font-weight: 800;
                     color: #333;
-                    margin-bottom: 10px;
+                    margin-bottom: 15px;
                 }}
-                .content-wrapper {{
-                    display: flex;
-                    gap: 40px;
+                
+                .header p {{
+                    color: #666;
+                    font-size: 1.4rem;
                 }}
-                .summary-column {{
-                    flex: 1;
-                    min-width: 500px;
-                }}
-                .months-column {{
-                    flex: 1;
-                    min-width: 500px;
-                }}
+                
                 .summary-grid {{
                     display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    gap: 20px;
-                    margin: 30px 0;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 25px;
+                    margin: 50px 0;
                 }}
+                
                 .summary-card {{
                     background: white;
-                    padding: 25px;
-                    border-radius: 15px;
+                    padding: 35px;
+                    border-radius: 20px;
                     text-align: center;
-                    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+                    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
                     border: 1px solid #e0e0e0;
+                    transition: transform 0.3s ease;
                 }}
-                .summary-value {{
-                    font-size: 2.5rem;
-                    font-weight: bold;
-                    margin-bottom: 10px;
+                
+                .summary-card:hover {{
+                    transform: translateY(-5px);
                 }}
+                
                 .success-value {{
                     color: #10b981;
                 }}
+                
                 .total-value {{
                     color: #667eea;
                 }}
+                
+                .summary-value {{
+                    font-size: 3rem;
+                    font-weight: 800;
+                    margin-bottom: 15px;
+                }}
+                
+                .summary-label {{
+                    color: #666;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                }}
+                
                 .month-grid {{
                     display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 15px;
-                    margin: 30px 0;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 20px;
+                    margin: 50px 0;
                 }}
+                
                 .month-card {{
                     background: white;
-                    padding: 20px;
-                    border-radius: 12px;
+                    padding: 25px;
+                    border-radius: 16px;
                     border: 2px solid #e0e0e0;
                     text-align: center;
+                    transition: all 0.3s ease;
                 }}
+                
+                .month-card:hover {{
+                    transform: translateY(-3px);
+                    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+                }}
+                
                 .month-success {{
                     border-color: #10b981;
                     background: #f0f9f4;
                 }}
+                
                 .month-failed {{
                     border-color: #ef4444;
                     background: #fef2f2;
                 }}
+                
                 .month-name {{
-                    font-weight: bold;
+                    font-weight: 700;
                     margin-bottom: 10px;
-                    font-size: 1.1rem;
+                    font-size: 1.2rem;
                 }}
+                
                 .month-reports {{
-                    font-size: 1.8rem;
+                    font-size: 2rem;
                     color: #667eea;
                     margin-bottom: 10px;
+                    font-weight: 800;
                 }}
+                
                 .action-buttons {{
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 20px;
-                    margin-top: 40px;
+                    display: flex;
+                    gap: 30px;
+                    margin-top: 50px;
                 }}
+                
                 .action-btn {{
-                    padding: 20px;
+                    flex: 1;
+                    padding: 28px;
                     border: none;
-                    border-radius: 12px;
-                    font-size: 1.2rem;
-                    font-weight: 600;
+                    border-radius: 18px;
+                    font-size: 1.4rem;
+                    font-weight: 700;
                     cursor: pointer;
                     text-decoration: none;
                     text-align: center;
-                    transition: all 0.3s;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 18px;
                 }}
+                
                 .download-btn {{
-                    background: linear-gradient(90deg, #10b981, #059669);
+                    background: linear-gradient(135deg, #10b981, #059669);
                     color: white;
                 }}
+                
                 .download-btn:hover {{
-                    transform: translateY(-3px);
-                    box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+                    transform: translateY(-4px);
+                    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
                 }}
+                
                 .back-btn {{
                     background: #f8f9fa;
                     color: #555;
                     border: 2px solid #e0e0e0;
                 }}
+                
                 .back-btn:hover {{
                     background: #e9ecef;
-                    transform: translateY(-2px);
+                    transform: translateY(-3px);
+                    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
                 }}
+                
                 .note-box {{
-                    background: #fff3cd;
-                    border: 1px solid #ffc107;
-                    padding: 15px;
-                    border-radius: 10px;
-                    margin-top: 20px;
+                    background: linear-gradient(135deg, #fff9e6, #fff3cd);
+                    border: 2px solid #ffc107;
+                    padding: 25px;
+                    border-radius: 15px;
+                    margin-top: 40px;
                     color: #856404;
+                    font-size: 1.1rem;
+                    line-height: 1.6;
                 }}
-                @media (max-width: 1024px) {{
-                    .content-wrapper {{
+                
+                @media (max-width: 1200px) {{
+                    .month-grid {{
+                        grid-template-columns: repeat(3, 1fr);
+                    }}
+                }}
+                
+                @media (max-width: 900px) {{
+                    .summary-grid {{
+                        grid-template-columns: repeat(2, 1fr);
+                    }}
+                    
+                    .month-grid {{
+                        grid-template-columns: repeat(2, 1fr);
+                    }}
+                    
+                    .action-buttons {{
                         flex-direction: column;
                     }}
-                    .summary-column, .months-column {{
-                        min-width: 100%;
+                }}
+                
+                @media (max-width: 600px) {{
+                    .result-card {{
+                        padding: 30px;
+                    }}
+                    
+                    .header h1 {{
+                        font-size: 2.5rem;
+                    }}
+                    
+                    .summary-grid {{
+                        grid-template-columns: 1fr;
+                    }}
+                    
+                    .month-grid {{
+                        grid-template-columns: 1fr;
                     }}
                 }}
             </style>
@@ -1597,79 +1807,68 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                         <p>{station} - {year} (All 12 Months)</p>
                     </div>
                     
-                    <div class="content-wrapper">
-                        <!-- Left Column: Summary -->
-                        <div class="summary-column">
-                            <div class="summary-grid">
-                                <div class="summary-card">
-                                    <div class="summary-value success-value">{results['total_success']}/12</div>
-                                    <div class="summary-label">Successful Months</div>
-                                </div>
-                                <div class="summary-card">
-                                    <div class="summary-value total-value">{results['total_reports']:,}</div>
-                                    <div class="summary-label">Total {report_type} Reports</div>
-                                </div>
-                                <div class="summary-card">
-                                    <div class="summary-value">{station}</div>
-                                    <div class="summary-label">Station</div>
-                                </div>
-                                <div class="summary-card">
-                                    <div class="summary-value">{report_type}</div>
-                                    <div class="summary-label">Report Type</div>
-                                </div>
-                            </div>
-                            
-                            <div class="note-box">
-                                <strong>Processing Details:</strong><br>
-                                ✓ Files saved with original naming: {report_type}YYYYMM.txt<br>
-                                ✓ Downloaded in batches of 3 months with delays.<br>
-                                ✓ Report type: {'TAF (tipo=FC)' if report_type == 'TAF' else 'METAR (tipo=SA)'}<br>
-                                ✓ Folder: {results['folder']}.zip
-                            </div>
-                            
-                            <div class="action-buttons">
-                                <a href="/file/{results['folder']}" class="action-btn download-btn">
-                                    📥 Download All {report_type} Files (Folder)
-                                </a>
-                                <a href="/" class="action-btn back-btn">
-                                    ← New Download
-                                </a>
-                            </div>
+                    <div class="summary-grid">
+                        <div class="summary-card">
+                            <div class="summary-value success-value">{results['total_success']}/12</div>
+                            <div class="summary-label">Successful Months</div>
                         </div>
-                        
-                        <!-- Right Column: Months -->
-                        <div class="months-column">
-                            <h3 style="margin-bottom: 20px; color: #333;">Monthly Results:</h3>
-                            <div class="month-grid">
+                        <div class="summary-card">
+                            <div class="summary-value total-value">{results['total_reports']:,}</div>
+                            <div class="summary-label">Total {report_type} Reports</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-value">{station}</div>
+                            <div class="summary-label">Station Code</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-value">{report_type}</div>
+                            <div class="summary-label">Report Type</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-bottom: 30px; font-size: 1.8rem; color: #333;">Monthly Download Results:</h3>
+                    <div class="month-grid">
         """
         
         # Add month cards
         for result in results['results']:
             status_class = 'month-success' if result['success'] else 'month-failed'
             html += f"""
-                                <div class="month-card {status_class}">
-                                    <div class="month-name">{result['month_name']}</div>
-                                    <div class="month-reports">
-                                        {result['reports'] if result['success'] else '❌'}
-                                    </div>
-                                    <div style="font-size: 0.9rem; color: #666;">
-                                        {result['month']}
-                                    </div>
-                                </div>
-            """
-        
-        html += f"""
+                        <div class="month-card {status_class}">
+                            <div class="month-name">{result['month_name']}</div>
+                            <div class="month-reports">
+                                {result['reports'] if result['success'] else '❌'}
                             </div>
-                            <div style="margin-top: 30px; color: #666; font-size: 1rem;">
-                                <strong>Folder Structure:</strong><br>
-                                {results['folder']}/<br>
-                                ├── {report_type}{year}01.txt<br>
-                                ├── {report_type}{year}02.txt<br>
-                                ├── {report_type}{year}03.txt<br>
-                                ├── ... (all 12 months)<br>
-                                └── Download as ZIP archive
+                            <div style="font-size: 1rem; color: #666; margin-top: 10px;">
+                                {result['month']} | {report_type}
                             </div>
                         </div>
+            """
+        
+        # Different note for METAR vs TAF
+        if report_type == 'TAF':
+            note_text = "✓ TAF processing: Leading timestamps removed, BECMG/TEMPO preserved"
+        else:
+            note_text = "✓ METAR processing: Timestamps removed, only clean METAR/SPECI reports"
+        
+        html += f"""
+                    </div>
+                    
+                    <div class="note-box">
+                        <strong>📊 Batch Processing Summary:</strong><br>
+                        {note_text}<br>
+                        <strong>📁 Folder created:</strong> {results['folder']}<br>
+                        <strong>⏱️ Processing:</strong> Downloaded in batches of 3 months<br>
+                        <strong>🔧 Report type:</strong> {'TAF (tipo=FC)' if report_type == 'TAF' else 'METAR (tipo=SA)'}
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="/file/{results['folder']}" class="action-btn download-btn">
+                            📥 Download All Files (ZIP)
+                        </a>
+                        <a href="/" class="action-btn back-btn">
+                            ← New Download
+                        </a>
                     </div>
                 </div>
             </div>
@@ -1721,6 +1920,23 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, "File not found")
 
 # Start server
+print("=" * 70)
+print("🌤️ METAR/TAF DESKTOP WEB APP")
+print("=" * 70)
+print(f"Server running on: http://localhost:{PORT}")
+print("Features:")
+print(" • Desktop-optimized professional UI")
+print(" • Dual panel layout with information section")
+print(" • METAR and TAF download options")
+print(" • VOGA priority station with quick selection")
+print(" • Single month & All months (batch) download")
+print(" • METAR: Timestamps removed")
+print(" • TAF: Leading timestamps removed, BECMG/TEMPO preserved")
+print(" • File naming: METARYYYYMM.txt / TAFYYYYMM.txt")
+print(" • Batch processing (3 months at a time with delays)")
+print(" • Keyboard shortcuts (Ctrl+Enter, Escape)")
+print("=" * 70)
+
 try:
     with socketserver.TCPServer(("", PORT), MetarHandler) as httpd:
         httpd.serve_forever()
