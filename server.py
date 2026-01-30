@@ -7,7 +7,7 @@ import time
 import os
 from datetime import datetime
 
-PORT = int(os.environ.get('PORT', 8081))
+PORT = int(os.environ.get('PORT', 8080))
 
 class MetarHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -730,45 +730,79 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         }
         
-        # Get cookies
-        session.get('https://www.ogimet.com/display_metars2.php?lang=en', 
-                   headers=headers, timeout=10)
-        time.sleep(0.5)
-        
-        # Set report type (METAR=SA, TAF=FC)
-        tipo = 'FC' if report_type == 'TAF' else 'SA'
-        
-        # Form data (EXACTLY like original)
-        form_data = {
-            'lugar': station,
-            'tipo': tipo,  # Changed based on report type
-            'ord': 'DIR',
-            'nil': 'NO',
-            'fmt': 'txt',
-            'ano': year,
-            'mes': month,
-            'day': '01',
-            'hora': '00',
-            'min': '00',
-            'anof': year,
-            'mesf': month,
-            'dayf': end_day,
-            'horaf': '23',
-            'minf': '59',
-            'send': 'Send',
-            'enviar': 'Send',
-            'lang': 'en'
-        }
-        
-        post_headers = headers.copy()
-        post_headers.update({
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Referer': 'https://www.ogimet.com/display_metars2.php?lang=en',
-        })
+        # TAF के लिए अलग URL और पैरामीटर्स
+        if report_type == 'TAF':
+            # TAF डाउनलोड के लिए अलग URL
+            url = 'https://www.ogimet.com/display_tafs2.php'
+            
+            # Get cookies for TAF
+            session.get(url + '?lang=en', headers=headers, timeout=10)
+            time.sleep(0.5)
+            
+            # TAF के लिए form data (OGimet के TAF पेज के अनुसार)
+            form_data = {
+                'lugar': station,
+                'tipo': 'ALL',  # TAF के लिए 'ALL' या 'FC'
+                'ord': 'REV',
+                'nil': 'SI',
+                'fmt': 'txt',
+                'ano': year,
+                'mes': month,
+                'day': '01',
+                'hora': '00',
+                'min': '00',
+                'anof': year,
+                'mesf': month,
+                'dayf': end_day,
+                'horaf': '23',
+                'minf': '59',
+                'send': 'send'
+            }
+            
+            post_headers = headers.copy()
+            post_headers.update({
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Referer': 'https://www.ogimet.com/display_tafs2.php?lang=en',
+            })
+        else:
+            # METAR के लिए मूल URL
+            url = 'https://www.ogimet.com/display_metars2.php'
+            
+            # Get cookies for METAR
+            session.get(url + '?lang=en', headers=headers, timeout=10)
+            time.sleep(0.5)
+            
+            # METAR के लिए form data
+            form_data = {
+                'lugar': station,
+                'tipo': 'SA',
+                'ord': 'DIR',
+                'nil': 'NO',
+                'fmt': 'txt',
+                'ano': year,
+                'mes': month,
+                'day': '01',
+                'hora': '00',
+                'min': '00',
+                'anof': year,
+                'mesf': month,
+                'dayf': end_day,
+                'horaf': '23',
+                'minf': '59',
+                'send': 'Send',
+                'enviar': 'Send',
+                'lang': 'en'
+            }
+            
+            post_headers = headers.copy()
+            post_headers.update({
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Referer': 'https://www.ogimet.com/display_metars2.php?lang=en',
+            })
         
         # Send request
         response = session.post(
-            'https://www.ogimet.com/display_metars2.php',
+            url,
             data=form_data,
             headers=post_headers,
             timeout=30
@@ -786,27 +820,18 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
         lines = text.split('\n')
         clean_reports = []
         
-        # For TAF, we look for TAF reports, for METAR we look for METAR/SPECI
-        if report_type == 'TAF':
-            search_terms = ['TAF', 'TAF AMD', 'TAF COR']
-        else:
-            search_terms = ['METAR', 'SPECI']
-        
         for line in lines:
             line = line.strip()
             
             if not line:
                 continue
             
-            # Check if line contains the appropriate report type
-            has_report_type = any(term in line for term in search_terms)
-            if not has_report_type:
-                continue
-            
+            # Check if line starts with HTML tags or comments
             if line.startswith(('<', '#', '<!--')):
                 continue
             
             # Remove timestamps - KEY FEATURE!
+            # Match patterns like: 202401010030 -> VOGA 070800Z
             if re.match(r'^\d{10,14}\s+', line):
                 line = re.sub(r'^\d{10,14}\s+', '', line)
             elif '->' in line:
@@ -816,18 +841,21 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
             
             # Additional validation based on report type
             if report_type == 'TAF':
-                # For TAF, check for TAF pattern
-                if 'TAF' in line and re.search(r'\d{6}Z', line):
-                    clean_reports.append(line)
+                # For TAF, look for TAF reports
+                if line.startswith('TAF ') and len(line) > 10:
+                    # Ensure it's a valid TAF format
+                    if re.search(r'\d{6}Z\s+\d{4}/\d{4}', line):
+                        clean_reports.append(line)
             else:
-                # For METAR, check for METAR/SPECI pattern
-                if (('METAR' in line or 'SPECI' in line) and 
-                    len(line) > 20 and 
-                    re.search(r'\d{6}Z', line)):
-                    clean_reports.append(line)
+                # For METAR, look for METAR/SPECI reports
+                if (line.startswith('METAR ') or line.startswith('SPECI ')) and len(line) > 20:
+                    # Ensure it's a valid METAR format
+                    if re.search(r'\d{6}Z', line):
+                        clean_reports.append(line)
         
         # Sort by time
         def get_time(report):
+            # Extract time from report (e.g., 070800Z from TAF VOGA 070800Z)
             match = re.search(r'(\d{6})Z', report)
             return match.group(1) if match else '000000'
         
@@ -1030,7 +1058,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     <div class="note-box">
                         <strong>✓ Original cleaning applied:</strong> 
                         Timestamps removed, only clean {report_type} reports saved.
-                        Report type: {'TAF (tipo=FC)' if report_type == 'TAF' else 'METAR (tipo=SA)'}
+                        <br>URL used: {'display_tafs2.php' if report_type == 'TAF' else 'display_metars2.php'}
                     </div>
                 </div>
                 
@@ -1277,7 +1305,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     <strong>✓ Original batch processing:</strong> 
                     Downloaded in batches of 3 months with delays, just like the terminal version. 
                     Timestamps removed from all files. 
-                    Report type: {'TAF (tipo=FC)' if report_type == 'TAF' else 'METAR (tipo=SA)'}
+                    <br>URL used: {'display_tafs2.php' if report_type == 'TAF' else 'display_metars2.php'}
                 </div>
                 
                 <div class="action-buttons">
@@ -1348,6 +1376,8 @@ print(" • Single month & All months download")
 print(" • Original timestamp cleaning")
 print(" • Batch processing (3 months at a time)")
 print(" • Professional UI design")
+print("=" * 60)
+print("Note: TAF uses display_tafs2.php, METAR uses display_metars2.php")
 print("=" * 60)
 
 try:
