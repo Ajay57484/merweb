@@ -387,7 +387,8 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                 </div>
                 
                 <div class="status-bar">
-                    <p>📊 It may take a while...The site is busy pondering its existane <br>  Contact : AJAY YADAV (IMD GOA) <br>  ajaypahe02@gmail.com </p>
+                    <p>📊 This may take a while...The site is currently busy pondering its existane <br>  Contact : AJAY YADAV (IMD GOA) <br>  ajaypahe02@gmail.com </p>
+                    <p> Hello<p>
                 </div>
             </div>
             
