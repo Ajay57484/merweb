@@ -47,7 +47,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     backdrop-filter: blur(10px);
                     border-radius: 20px;
                     padding: 40px;
-                    max-width: 800px;
+                    max-width: 85%;
                     margin: 0 auto;
                     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
                     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1000,7 +1000,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     backdrop-filter: blur(10px);
                     border-radius: 20px;
                     padding: 40px;
-                    max-width: 900px;
+                    max-width: 85%;
                     margin: 0 auto;
                     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
                     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1252,7 +1252,7 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                     backdrop-filter: blur(10px);
                     border-radius: 20px;
                     padding: 40px;
-                    max-width: 1000px;
+                    max-width: 85%;
                     margin: 0 auto;
                     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
                     border: 1px solid rgba(255, 255, 255, 0.2);
