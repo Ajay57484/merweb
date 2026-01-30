@@ -320,14 +320,6 @@ class MetarHandler(http.server.SimpleHTTPRequestHandler):
                                 <div class="station-code">VOMM</div>
                                 <div class="station-name">Chennai</div>
                             </div>
-                            <div class="station-card" onclick="setStation('VABB')">
-                                <div class="station-code">VABB</div>
-                                <div class="station-name">Mumbai</div>
-                            </div>
-                            <div class="station-card" onclick="setStation('VIDP')">
-                                <div class="station-code">VIDP</div>
-                                <div class="station-name">Delhi</div>
-                            </div>
                         </div>
                     </div>
                     
